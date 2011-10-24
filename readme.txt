@@ -30,7 +30,7 @@ Choose from hundreds of thoughtfully designed templates guaranteed to make your 
 __Email Delivery__
 iContact moves your messages straight from your business to your customers' inboxes, every time. How do they do it? With a team of delivery specialists, SpamCheck&trade;, and close relationships with all the major Internet service providers.
 
-__What is <a href="http://wordpressformplugin.com?r=icontactreadme" rel="nofollow">Gravity Forms</a>?__
+###What is <a href="http://wordpressformplugin.com?r=icontactreadme" rel="nofollow">Gravity Forms</a>?
 [youtube http://www.youtube.com/watch?v=cRtE_riFwaw]
 
 == Screenshots ==
