@@ -20,16 +20,16 @@ The plugin uses the iContact API for tight integration.
 
 ####Learn about email marketing with <a href="http://www.icontact.com/a.pl/483190" rel="nofollow">iContact</a>:
 
-__MessageBuilder&trade;__<br />
-Create beautiful messages in minutes with __iContact's drag-and-drop message creation tool__. Simply pick a template from iContact's well-stocked template library, and make it your own by adding your brand colors, images, links, and text.
+<strong>MessageBuilder&trade;</strong><br />
+Create beautiful messages in minutes with <strong>iContact's drag-and-drop message creation tool</strong>. Simply pick a template from iContact's well-stocked template library, and make it your own by adding your brand colors, images, links, and text.
 
-__MessageCoder&trade;__<br />
+<strong>MessageCoder&trade;</strong><br />
 If you are a design or HTML pro, this is the tool for you. Use MessageCoder to import HTML from your favorite template or to start a message from scratch. Then use iContact's table editing tools, message previews, and custom color swatches to put the final touches on a message that's exactly what you want.
 
-__Email Templates__<br />
+<strong>Email Templates</strong><br />
 Choose from hundreds of thoughtfully designed templates guaranteed to make your messages pop.
 
-__Email Delivery__<br />
+<strong>Email Delivery</strong><br />
 iContact moves your messages straight from your business to your customers' inboxes, every time. How do they do it? With a team of delivery specialists, SpamCheck&trade;, and close relationships with all the major Internet service providers.
 
 ###What is <a href="http://wordpressformplugin.com?r=icontactreadme" rel="nofollow">Gravity Forms</a>?
