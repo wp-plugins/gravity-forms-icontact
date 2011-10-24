@@ -16,6 +16,8 @@ Integrate the remarkable <a href="http://wordpressformplugin.com/?r=icontactread
 
 Integrate your Gravity Forms forms so that when users submit a form entry, the entries get added to iContact. Link any field type with iContact, including custom fields.
 
+The plugin uses the iContact API for tight integration.
+
 ####Learn about email marketing with <a href="http://www.icontact.com/a.pl/483190" rel="nofollow">iContact</a>:
 
 __MessageBuilder&trade;__<br />
