@@ -6,11 +6,11 @@ Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20iContact&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
-Integrate the remarkable <a href="http://wordpressformplugin.com/?r=icontactreadme" rel="nofollow">Gravity Forms</a> plugin with iContact.
+Integrate the remarkable <a href="http://www.gravityforms.com/?r=icontactreadme" rel="nofollow">Gravity Forms</a> plugin with iContact.
 
 == Description ==
 
-> This plugin requires the amazing <a href="http://wordpressformplugin.com/?r=icontactreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://wordpressformplugin.com/?r=icontactreadme" rel="nofollow">Get the plugin</a></strong>, then start using this great plugin!
+> This plugin requires the amazing <a href="http://www.gravityforms.com/?r=icontactreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://www.gravityforms.com/?r=icontactreadme" rel="nofollow">Get the plugin</a></strong>, then start using this great plugin!
 
 ### The best way to integrate Gravity Forms with iContact
 
@@ -54,7 +54,7 @@ iContact moves your messages straight from your business to your customers' inbo
 == Frequently Asked Questions == 
 
 = Does this plugin require Gravity Forms? =
-This plugin requires the brilliant [Gravity Forms plugin](http://wordpressformplugin.com/?r=icontactreadme). __Don't use Gravity Forms? [Buy the plugin](http://wordpressformplugin.com/?r=icontactreadme)__ and start using this add-on plugin!
+This plugin requires the brilliant [Gravity Forms plugin](http://www.gravityforms.com/?r=icontactreadme). __Don't use Gravity Forms? [Buy the plugin](http://www.gravityforms.com/?r=icontactreadme)__ and start using this add-on plugin!
 
 = Does this plugin require iContact? =
 Yes, it does. If you don't have an iContact account, <a href="http://www.icontact.com/a.pl/483190" rel="nofollow">sign up for an account here</a>.
