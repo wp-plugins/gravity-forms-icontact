@@ -57,7 +57,7 @@ iContact moves your messages straight from your business to your customers' inbo
 This plugin requires the brilliant [Gravity Forms plugin](http://www.gravityforms.com/?r=icontactreadme). __Don't use Gravity Forms? [Buy the plugin](http://www.gravityforms.com/?r=icontactreadme)__ and start using this add-on plugin!
 
 = Does this plugin require iContact? =
-Yes, it does. If you don't have an iContact account, <a href="http://www.icontact.com/a.pl/483190" rel="nofollow">sign up for an account here</a>.
+Yes, it does. If you don't have an iContact account, <a href="http://www.icontact.com" rel="nofollow">sign up for an account here</a>.
 
 = What's the license for this plugin? =
 This plugin is released under a GPL license.
