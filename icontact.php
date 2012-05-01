@@ -116,7 +116,7 @@ class GFiContact {
 
     public static function plugin_row(){
         if(!self::is_gravityforms_supported()){
-            $message = sprintf(__("%sGravity Forms%s is required. Activate it now or %spurchase it today!%s"), "<a href='http://wordpressformplugin.com/?r=icontact'>", "</a>", "<a href='http://wordpressformplugin.com/?r=icontact'>", "</a>");
+            $message = sprintf(__("%sGravity Forms%s is required. Activate it now or %spurchase it today!%s"), "<a href='http://formplugin.com/?r=icontact'>", "</a>", "<a href='http://formplugin.com/?r=icontact'>", "</a>");
             self::display_plugin_message($message, true);
         }
     }
