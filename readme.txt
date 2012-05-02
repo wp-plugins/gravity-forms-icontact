@@ -1,7 +1,7 @@
 === Gravity Forms iContact Add-on ===
 Tags: iContact, gravity forms, forms, gravity, form, crm, gravity form, email, newsletter, i Contact, mailing list, email marketing, newsletters
 Requires at least: 2.8
-Tested up to: 3.3
+Tested up to: 3.3.2
 Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20iContact&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
@@ -32,7 +32,7 @@ Choose from hundreds of thoughtfully designed templates guaranteed to make your 
 <strong>Email Delivery</strong><br />
 iContact moves your messages straight from your business to your customers' inboxes, every time. How do they do it? With a team of delivery specialists, SpamCheck&trade;, and close relationships with all the major Internet service providers.
 
-###What is <a href="http://wordpressformplugin.com?r=icontactreadme" rel="nofollow">Gravity Forms</a>?
+###What is <a href="http://www.gravityforms.com?r=icontactreadme" rel="nofollow">Gravity Forms</a>?
 [youtube http://www.youtube.com/watch?v=cRtE_riFwaw]
 
 == Screenshots ==
