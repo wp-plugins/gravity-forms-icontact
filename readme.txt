@@ -18,7 +18,7 @@ Integrate your Gravity Forms forms so that when users submit a form entry, the e
 
 The plugin uses the iContact API for tight integration.
 
-####Learn about email marketing with <a href="http://www.icontact.com/a.pl/483190" rel="nofollow">iContact</a>:
+####Learn about email marketing with <a href="http://www.icontact.com" rel="nofollow">iContact</a>:
 
 <strong>MessageBuilder&trade;</strong><br />
 Create beautiful messages in minutes with <strong>iContact's drag-and-drop message creation tool</strong>. Simply pick a template from iContact's well-stocked template library, and make it your own by adding your brand colors, images, links, and text.
