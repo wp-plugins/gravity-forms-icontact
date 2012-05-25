@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms iContact Add-On
 Plugin URI: http://www.seodenver.com/icontact/
 Description: Integrates Gravity Forms with iContact allowing form submissions to be automatically sent to your iContact account
-Version: 1.0
+Version: 1.1
 Author: Katz Web Services, Inc.
 Author URI: http://www.katzwebservices.com
 
@@ -116,7 +116,7 @@ class GFiContact {
 
     public static function plugin_row(){
         if(!self::is_gravityforms_supported()){
-            $message = sprintf(__("%sGravity Forms%s is required. Activate it now or %spurchase it today!%s"), "<a href='http://formplugin.com/?r=icontact'>", "</a>", "<a href='http://formplugin.com/?r=icontact'>", "</a>");
+            $message = sprintf(__("%sGravity Forms%s is required. Activate it now or %spurchase it today!%s"), "<a href='http://wordpressformplugin.com/?r=icontact'>", "</a>", "<a href='http://wordpressformplugin.com/?r=icontact'>", "</a>");
             self::display_plugin_message($message, true);
         }
     }
@@ -222,8 +222,7 @@ class GFiContact {
           
         $api = self::get_api();	
 		
-        $message = '';
-		
+        $message = ''; $style = '';
 		if(!empty($settings["username"]) && !empty($settings["password"]) && empty($api->lastError)){
             $message = sprintf(__("Valid username and API key. Now go %sconfigure form integration with iContact%s!", "gravity-forms-icontact"), '<a href="'.admin_url('admin.php?page=gf_icontact').'">', '</a>');
             $class = "updated valid_credentials";
@@ -233,15 +232,16 @@ class GFiContact {
         	$valid = false;
             $class = "error invalid_credentials";
         } else if (empty($settings["username"]) && empty($settings["password"])) {
-			$message = '';
+			$message = sprintf(__('<div style="max-width: 800px; border-bottom:1px solid #ddd; margin-bottom:10px; padding-bottom:10px;" class="wrap"><h2>%s</h2><a href="http://katz.si/icontact" class="alignright" style="text-align:center; margin-left:10px;"><img src="%s" width="120" height="90" alt="Try iContact for Free" /><span style="display:block;">Sign Up Now</span></a>%s<div class="clear"></div></div><div class="clear"></div>', "gravity-forms-icontact"), __('This plugin requires an iContact account.', 'gravity-forms-icontact'), plugins_url('images/graphic.gif', __FILE__), __('<p style="font-size:1.4em; line-height:1.3; font-weight:200;">In order to integrate this plugin with Gravity Forms, you need an iContact account. <a href="http://katz.si/icontact">Sign up for a free iContact account now.</a></p>', 'gravity-forms-icontact'));
 			$valid = false;
-			$class = 'updated notice';
+			$class = '';
+			$style = '';
         }
 
 		if($message) {
 			$message = str_replace('Api', 'API', $message);
 	        ?>
-	        <div id="message" class="<?php echo $class ?>"><?php echo wpautop($message); ?></div>
+	        <div id="message" class="<?php echo $class ?>" style="<?php echo $style ?>"><?php echo wpautop($message); ?></div>
 	        <?php 
         }
         ?>
@@ -257,7 +257,7 @@ class GFiContact {
 					<li style="list-style:decimal outside;"><?php _e(sprintf('Set the Application Name and Description to %siContact Gravity Forms Add-on%s. Submit the form by clicking the button "Get App ID."','<em>', '</em>'), "gravity-forms-icontact") ?></li>
 					<li style="list-style:decimal outside;"><?php _e('Click the link on the bottom of the next page that says "To authenticate to the API, you must enable this AppId for your account."', "gravity-forms-icontact") ?></li>
 					<li style="list-style:decimal outside;"><?php _e('Copy the Application ID - you&rsquo;ll be entering it on this page.', "gravity-forms-icontact") ?></li>
-					<li style="list-style:decimal outside;"><?php _e(sprintf('Enter a password that is not your iContact password. %sCopy this password% - you&rsquo;ll be entering it on this page.','<strong>','</strong>'), "gravity-forms-icontact") ?></li>
+					<li style="list-style:decimal outside;"><?php _e(sprintf('Enter a password that is not your iContact password. %sCopy this password%s - you&rsquo;ll be entering it on this page.','<strong>','</strong>'), "gravity-forms-icontact") ?></li>
 					<li style="list-style:decimal outside;"><?php _e('Click Save.', "gravity-forms-icontact") ?></li>
 					<li style="list-style:decimal outside;"><?php _e('You should see the message \'The application "iContact Gravity Forms Add-On" can now access your account, using the password you provided.\'', "gravity-forms-icontact") ?></li>
 					<li style="list-style:decimal outside;"><?php _e('Come back to this settings page and enter your Application ID and Application Password that you copied from the steps above.', "gravity-forms-icontact") ?></li>
@@ -420,7 +420,7 @@ class GFiContact {
                                             </span>
                                         </div>
                                     </td>
-                                    <td class="column-name" style="width:40%"><ul class="ul-disc"><li><?php echo implode('</li><li>', explode(',', $setting["meta"]["contact_list_name"])) ?></li></ul></td>
+                                    <td class="column-name" style="width:40%"><ul class="ul-disc"><li><?php echo implode('</li><li>', explode(',', esc_html($setting["meta"]["contact_list_name"]))) ?></li></ul></td>
                                 </tr>
                                 <?php
                             }
@@ -452,6 +452,7 @@ class GFiContact {
             </form>
         </div>
         <script type="text/javascript">
+        //<![CDATA[
             function DeleteSetting(id){
                 jQuery("#action_argument").val(id);
                 jQuery("#action").val("delete");
@@ -481,7 +482,8 @@ class GFiContact {
 
                 return true;
             }
-        </script>
+//]]>
+</script>
         <?php
     }
 
@@ -635,9 +637,6 @@ class GFiContact {
                 }
                 else{
                 	
-                	#echo '<pre>'.print_r($lists,true).'</pre>';
-                	
-#                	print_r($config["meta"]["contact_list_id"]);
 					if(isset($config["meta"]["contact_list_id"])) {
 	                	$contact_lists = explode(',' , $config["meta"]["contact_list_id"]);
 	                } else {
@@ -656,11 +655,13 @@ class GFiContact {
                     ?>
                   </ul>
                   <script type="text/javascript">
+                  //<![CDATA[
                  	if(jQuery('#lists_loading').length && jQuery('#gf_icontact_list_list').length) {
                  		jQuery('#lists_loading').fadeOut(function() { jQuery('#gf_icontact_list_list').fadeIn(); });
 	                 } else if(jQuery('#gf_icontact_list_list').length) {
 	                 	jQuery('#gf_icontact_list_list').show();
 	                 }
+                 //]]>
                  </script>
                 <?php
                 }
@@ -703,7 +704,7 @@ class GFiContact {
             	<div id="icontact_field_container" valign="top" class="margin_vertical_10" >
                 	<h2><?php _e('3. Map form fields to iContact fields.', "gravity-forms-icontact"); ?></h2>
                 	<h3 class="description"><?php _e('About field mapping:', "gravity-forms-icontact"); ?></h2>
-                	<p class="description" style="margin-bottom:1em;"><?php _e(sprintf('%sIf you don&rsquo;t see an attribute listed, you need to create it in iContact first under %sSubscribers > Profile Management%s.%sOnly fields mapped below will be added to iContact.%sCustom Fields are defined inside the iContact application. %sLearn more about using Custom Fields in iContact%s.%s', '<li>', '<em style="font-style:normal;">', '</em>', '</li><li>','</li><li>', '<a href="http://blog.icontact.com/blog/effectively-using-custom-fields-and-segments-for-specific-interests/" target="_blank">', '</a>', '</li>'), "gravity-forms-icontact"); ?></p>
+                	<p class="description" style="margin-bottom:1em;"><?php _e(sprintf('%sIf you don&rsquo;t see a field listed, you need to create it in iContact first under %s[Your Name] > Custom Fields%s.%sOnly fields mapped below will be added to iContact.%sCustom Fields are defined inside the iContact application. %sLearn more about using Custom Fields in iContact%s.%s', '<li>', '<em style="font-style:normal;">', '</em>', '</li><li>','</li><li>', '<a href="http://blog.icontact.com/blog/effectively-using-custom-fields-and-segments-for-specific-interests/" target="_blank">', '</a>', '</li>'), "gravity-forms-icontact"); ?></p>
                 	<label for="icontact_fields" class="left_header"><?php _e("Standard Fields", "gravity-forms-icontact"); ?> <?php gform_tooltip("icontact_map_fields") ?></label>
                     <div id="icontact_field_list">
                     <?php
@@ -760,6 +761,7 @@ class GFiContact {
                     </div>
 
                     <script type="text/javascript">
+                    //<![CDATA[
                         <?php
                         if(!empty($config["form_id"])){
                             ?>
@@ -775,7 +777,8 @@ class GFiContact {
                         <?php
                         }
                         ?>
-                    </script>
+                   //]]>
+                   </script>
                 </div>
 
                 <div id="icontact_submit_container" class="margin_vertical_10">
@@ -786,6 +789,7 @@ class GFiContact {
         </div>
 		
 <script type="text/javascript">
+//<![CDATA[
 	jQuery(document).ready(function($) { 
 			$('#gf_icontact_list_list').live('load change', function() {
 				$('#lists_loading').hide();
@@ -826,136 +830,135 @@ class GFiContact {
 		});
 	<?php } ?>
 	});
-		</script>
-		<script type="text/javascript">
-			
-			function SelectList(listId){
-                if(listId){
-                    jQuery("#icontact_form_container").slideDown();
-                   // jQuery("#gf_icontact_form").val("");
-                }
-                else{
-                    jQuery("#icontact_form_container").slideUp();
-                    EndSelectForm("");
-                }
+		
+		function SelectList(listId){
+            if(listId){
+                jQuery("#icontact_form_container").slideDown();
+               // jQuery("#gf_icontact_form").val("");
             }
+            else{
+                jQuery("#icontact_form_container").slideUp();
+                EndSelectForm("");
+            }
+        }
 
-            function SelectForm(listId, formId){
-                if(!formId){
-                    jQuery("#icontact_field_group").slideUp();
-                    return;
-                }
-
-                jQuery("#icontact_wait").show();
+        function SelectForm(listId, formId){
+            if(!formId){
                 jQuery("#icontact_field_group").slideUp();
-
-                var mysack = new sack("<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );
-                mysack.execute = 1;
-                mysack.method = 'POST';
-                mysack.setVar( "action", "gf_select_icontact_form" );
-                mysack.setVar( "gf_select_icontact_form", "<?php echo wp_create_nonce("gf_select_icontact_form") ?>" );
-                mysack.setVar( "list_ids", listId);
-                mysack.setVar( "form_id", formId);
-                mysack.encVar( "cookie", document.cookie, false );
-                mysack.onError = function() {jQuery("#icontact_wait").hide(); alert('<?php _e("Ajax error while selecting a form", "gravity-forms-icontact") ?>' )};
-                mysack.runAJAX();
-                return true;
+                return;
             }
 
-            function SetOptin(selectedField, selectedValue){
+            jQuery("#icontact_wait").show();
+            jQuery("#icontact_field_group").slideUp();
 
-                //load form fields
-                jQuery("#icontact_optin_field_id").html(GetSelectableFields(selectedField, 20));
-                var optinConditionField = jQuery("#icontact_optin_field_id").val();
+            var mysack = new sack("<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );
+            mysack.execute = 1;
+            mysack.method = 'POST';
+            mysack.setVar( "action", "gf_select_icontact_form" );
+            mysack.setVar( "gf_select_icontact_form", "<?php echo wp_create_nonce("gf_select_icontact_form") ?>" );
+            mysack.setVar( "list_ids", listId);
+            mysack.setVar( "form_id", formId);
+            mysack.encVar( "cookie", document.cookie, false );
+            mysack.onError = function() {jQuery("#icontact_wait").hide(); alert('<?php _e("Ajax error while selecting a form", "gravity-forms-icontact") ?>' )};
+            mysack.runAJAX();
+            return true;
+        }
 
-                if(optinConditionField){
-                    jQuery("#icontact_optin_condition_message").hide();
-                    jQuery("#icontact_optin_condition_fields").show();
-                    jQuery("#icontact_optin_value").html(GetFieldValues(optinConditionField, selectedValue, 20));
-                }
-                else{
-                    jQuery("#icontact_optin_condition_message").show();
-                    jQuery("#icontact_optin_condition_fields").hide();
-                }
+        function SetOptin(selectedField, selectedValue){
+
+            //load form fields
+            jQuery("#icontact_optin_field_id").html(GetSelectableFields(selectedField, 20));
+            var optinConditionField = jQuery("#icontact_optin_field_id").val();
+
+            if(optinConditionField){
+                jQuery("#icontact_optin_condition_message").hide();
+                jQuery("#icontact_optin_condition_fields").show();
+                jQuery("#icontact_optin_value").html(GetFieldValues(optinConditionField, selectedValue, 20));
+            }
+            else{
+                jQuery("#icontact_optin_condition_message").show();
+                jQuery("#icontact_optin_condition_fields").hide();
+            }
+        }
+
+        function EndSelectForm(fieldList, form_meta){
+            //setting global form object
+            form = form_meta;
+
+            if(fieldList){
+
+                SetOptin("","");
+
+                jQuery("#icontact_field_list").html(fieldList);
+                jQuery("#icontact_field_group").slideDown();
+				jQuery('#icontact_field_list').trigger('load');
+            }
+            else{
+                jQuery("#icontact_field_group").slideUp();
+                jQuery("#icontact_field_list").html("");
+            }
+            jQuery("#icontact_wait").hide();
+        }
+
+        function GetFieldValues(fieldId, selectedValue, labelMaxCharacters){
+            if(!fieldId)
+                return "";
+
+            var str = "";
+            var field = GetFieldById(fieldId);
+            if(!field || !field.choices)
+                return "";
+
+            var isAnySelected = false;
+
+            for(var i=0; i<field.choices.length; i++){
+                var fieldValue = field.choices[i].value ? field.choices[i].value : field.choices[i].text;
+                var isSelected = fieldValue == selectedValue;
+                var selected = isSelected ? "selected='selected'" : "";
+                if(isSelected)
+                    isAnySelected = true;
+
+                str += "<option value='" + fieldValue.replace("'", "&#039;") + "' " + selected + ">" + TruncateMiddle(field.choices[i].text, labelMaxCharacters) + "</option>";
             }
 
-            function EndSelectForm(fieldList, form_meta){
-                //setting global form object
-                form = form_meta;
-
-                if(fieldList){
-
-                    SetOptin("","");
-
-                    jQuery("#icontact_field_list").html(fieldList);
-                    jQuery("#icontact_field_group").slideDown();
-					jQuery('#icontact_field_list').trigger('load');
-                }
-                else{
-                    jQuery("#icontact_field_group").slideUp();
-                    jQuery("#icontact_field_list").html("");
-                }
-                jQuery("#icontact_wait").hide();
+            if(!isAnySelected && selectedValue){
+                str += "<option value='" + selectedValue.replace("'", "&#039;") + "' selected='selected'>" + TruncateMiddle(selectedValue, labelMaxCharacters) + "</option>";
             }
 
-            function GetFieldValues(fieldId, selectedValue, labelMaxCharacters){
-                if(!fieldId)
-                    return "";
+            return str;
+        }
 
-                var str = "";
-                var field = GetFieldById(fieldId);
-                if(!field || !field.choices)
-                    return "";
-
-                var isAnySelected = false;
-
-                for(var i=0; i<field.choices.length; i++){
-                    var fieldValue = field.choices[i].value ? field.choices[i].value : field.choices[i].text;
-                    var isSelected = fieldValue == selectedValue;
-                    var selected = isSelected ? "selected='selected'" : "";
-                    if(isSelected)
-                        isAnySelected = true;
-
-                    str += "<option value='" + fieldValue.replace("'", "&#039;") + "' " + selected + ">" + TruncateMiddle(field.choices[i].text, labelMaxCharacters) + "</option>";
-                }
-
-                if(!isAnySelected && selectedValue){
-                    str += "<option value='" + selectedValue.replace("'", "&#039;") + "' selected='selected'>" + TruncateMiddle(selectedValue, labelMaxCharacters) + "</option>";
-                }
-
-                return str;
+        function GetFieldById(fieldId){
+            for(var i=0; i<form.fields.length; i++){
+                if(form.fields[i].id == fieldId)
+                    return form.fields[i];
             }
+            return null;
+        }
 
-            function GetFieldById(fieldId){
-                for(var i=0; i<form.fields.length; i++){
-                    if(form.fields[i].id == fieldId)
-                        return form.fields[i];
+        function TruncateMiddle(text, maxCharacters){
+            if(text.length <= maxCharacters)
+                return text;
+            var middle = parseInt(maxCharacters / 2);
+            return text.substr(0, middle) + "..." + text.substr(text.length - middle, middle);
+        }
+
+        function GetSelectableFields(selectedFieldId, labelMaxCharacters){
+            var str = "";
+            var inputType;
+            for(var i=0; i<form.fields.length; i++){
+                fieldLabel = form.fields[i].adminLabel ? form.fields[i].adminLabel : form.fields[i].label;
+                inputType = form.fields[i].inputType ? form.fields[i].inputType : form.fields[i].type;
+                if(inputType == "checkbox" || inputType == "radio" || inputType == "select"){
+                    var selected = form.fields[i].id == selectedFieldId ? "selected='selected'" : "";
+                    str += "<option value='" + form.fields[i].id + "' " + selected + ">" + TruncateMiddle(fieldLabel, labelMaxCharacters) + "</option>";
                 }
-                return null;
             }
+            return str;
+        }
 
-            function TruncateMiddle(text, maxCharacters){
-                if(text.length <= maxCharacters)
-                    return text;
-                var middle = parseInt(maxCharacters / 2);
-                return text.substr(0, middle) + "..." + text.substr(text.length - middle, middle);
-            }
-
-            function GetSelectableFields(selectedFieldId, labelMaxCharacters){
-                var str = "";
-                var inputType;
-                for(var i=0; i<form.fields.length; i++){
-                    fieldLabel = form.fields[i].adminLabel ? form.fields[i].adminLabel : form.fields[i].label;
-                    inputType = form.fields[i].inputType ? form.fields[i].inputType : form.fields[i].type;
-                    if(inputType == "checkbox" || inputType == "radio" || inputType == "select"){
-                        var selected = form.fields[i].id == selectedFieldId ? "selected='selected'" : "";
-                        str += "<option value='" + form.fields[i].id + "' " + selected + ">" + TruncateMiddle(fieldLabel, labelMaxCharacters) + "</option>";
-                    }
-                }
-                return str;
-            }
-
-        </script>
+//]]>
+</script>
 		
         <?php
 
@@ -1011,8 +1014,6 @@ class GFiContact {
     	
         $api = self::get_api();
     	$custom_fields = $api->getCustomFields();
-#   	print_r($custom_fields); die();
-#    	{"customfields":[{"privateName":"gender","publicName":"Gender","displayToUser":1,"fieldType":"text","customFieldId":"gender"}]}
 		
 		$fields = array(
 			array('tag'=>'email', 'req' => true, 'name' => __("Email")),

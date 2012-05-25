@@ -34,7 +34,7 @@ class iContact {
 		$this->accountId = empty($settings['accountid']) ? $this->getAccountId() : $settings['accountid'];
 		$this->clientFolderId = empty($settings['clientfolderid']) ? $this->getClientFolderId() : $settings['clientfolderid'];
 		
-		if(array_diff($this->settings, $settings)) {
+		if(is_array($this->settings) && array_diff($this->settings, $settings)) {
 			update_option('gf_icontact_settings', $this->settings);
 		}
 	}
@@ -91,9 +91,7 @@ class iContact {
 	// Added by KWS
 	public function testSettings() {
 		$response = $this->callResource("/a/",'GET');
-		echo '<pre>';
-		print_r($response);		
-		echo '</pre>';
+		$this->dump($response, 'Testing Account Settings');
 		return $response;
 	}
 	
@@ -354,7 +352,7 @@ class iContact {
 
 		// Set SSL verify to false because of server issues.
 		$args = array(
-			'body' 		=> $data,
+			'body' 		=> json_encode($data),
 			'method'	=> strtoupper($method),
 			'headers' 	=> $headers,
 			'sslverify'	=> false,

@@ -6,19 +6,15 @@ Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20iContact&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
-Integrate the remarkable <a href="http://www.gravityforms.com/?r=icontactreadme" rel="nofollow">Gravity Forms</a> plugin with iContact.
+Integrate the remarkable Gravity Forms plugin with iContact.
 
 == Description ==
 
-> This plugin requires the amazing <a href="http://www.gravityforms.com/?r=icontactreadme" rel="nofollow">Gravity Forms plugin</a>. <strong>Don't use Gravity Forms? <a href="http://www.gravityforms.com/?r=icontactreadme" rel="nofollow">Get the plugin</a></strong>, then start using this great plugin!
-
-### The best way to integrate Gravity Forms with iContact
+### The best way to integrate with iContact
 
 Integrate your Gravity Forms forms so that when users submit a form entry, the entries get added to iContact. Link any field type with iContact, including custom fields.
 
-The plugin uses the iContact API for tight integration.
-
-####Learn about email marketing with <a href="http://www.icontact.com" rel="nofollow">iContact</a>:
+####Learn about email marketing with iContact:
 
 <strong>MessageBuilder&trade;</strong><br />
 Create beautiful messages in minutes with <strong>iContact's drag-and-drop message creation tool</strong>. Simply pick a template from iContact's well-stocked template library, and make it your own by adding your brand colors, images, links, and text.
@@ -31,9 +27,6 @@ Choose from hundreds of thoughtfully designed templates guaranteed to make your 
 
 <strong>Email Delivery</strong><br />
 iContact moves your messages straight from your business to your customers' inboxes, every time. How do they do it? With a team of delivery specialists, SpamCheck&trade;, and close relationships with all the major Internet service providers.
-
-###What is <a href="http://www.gravityforms.com?r=icontactreadme" rel="nofollow">Gravity Forms</a>?
-[youtube http://www.youtube.com/watch?v=cRtE_riFwaw]
 
 == Screenshots ==
 
@@ -54,21 +47,32 @@ iContact moves your messages straight from your business to your customers' inbo
 == Frequently Asked Questions == 
 
 = Does this plugin require Gravity Forms? =
-This plugin requires the brilliant [Gravity Forms plugin](http://www.gravityforms.com/?r=icontactreadme). __Don't use Gravity Forms? [Buy the plugin](http://www.gravityforms.com/?r=icontactreadme)__ and start using this add-on plugin!
+Yes, it does.
 
 = Does this plugin require iContact? =
-Yes, it does. If you don't have an iContact account, <a href="http://www.icontact.com" rel="nofollow">sign up for an account here</a>.
+Yes, it does.
 
 = What's the license for this plugin? =
 This plugin is released under a GPL license.
 
 == Changelog ==
 
+= 1.1 =
+* Fixed issues where contacts were not being added to iContact
+* Added support for lists with non-alphanumeric characters
+* Hopefully fixed <a href="http://wordpress.org/support/topic/plugin-gravity-forms-icontact-add-on-plugin-does-not-pull-fields-to-match">issue where plugin doesn't pull fields</a> to match up with the forms in Gravity Forms feed setup.
+* Added iContact signup link when plugin is not configured
+
 = 1.0 =
 
 * Liftoff!
 
 == Upgrade Notice ==
+
+= 1.1 =
+* Fixed issues where contacts were not being added to iContact
+* Added support for lists with non-alphanumeric characters
+* Hopefully fixed <a href="http://wordpress.org/support/topic/plugin-gravity-forms-icontact-add-on-plugin-does-not-pull-fields-to-match">issue where plugin doesn't pull fields</a> to match up with the forms in Gravity Forms feed setup.
 
 = 1.0 =
 
