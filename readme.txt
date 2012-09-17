@@ -1,7 +1,7 @@
 === Gravity Forms iContact Add-on ===
 Tags: iContact, gravity forms, forms, gravity, form, crm, gravity form, email, newsletter, i Contact, mailing list, email marketing, newsletters
 Requires at least: 2.8
-Tested up to: 3.3.2
+Tested up to: 3.4.2
 Stable tag: trunk
 Contributors: katzwebdesign
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20iContact&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
@@ -57,6 +57,9 @@ This plugin is released under a GPL license.
 
 == Changelog ==
 
+= 1.1.1 = 
+* Fixed issue users were having where form merge fields don't get pulled properly (see <a href="http://wordpress.org/support/topic/plugin-gravity-forms-icontact-add-on-plugin-does-not-pull-fields-to-match">here</a> and <a href="http://wordpress.org/support/topic/plugin-gravity-forms-icontact-add-on-does-not-pull-in-data-from-forms">here</a>). Issue only affected accounts with no custom fields defined.
+
 = 1.1 =
 * Fixed issues where contacts were not being added to iContact
 * Added support for lists with non-alphanumeric characters
@@ -68,6 +71,9 @@ This plugin is released under a GPL license.
 * Liftoff!
 
 == Upgrade Notice ==
+
+= 1.1.1 = 
+* Fixed issue users were having where form merge fields don't get pulled properly (see <a href="http://wordpress.org/support/topic/plugin-gravity-forms-icontact-add-on-plugin-does-not-pull-fields-to-match">here</a> and <a href="http://wordpress.org/support/topic/plugin-gravity-forms-icontact-add-on-does-not-pull-in-data-from-forms">here</a>). Issue only affected accounts with no custom fields defined.
 
 = 1.1 =
 * Fixed issues where contacts were not being added to iContact

@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms iContact Add-On
 Plugin URI: http://www.seodenver.com/icontact/
 Description: Integrates Gravity Forms with iContact allowing form submissions to be automatically sent to your iContact account
-Version: 1.1
+Version: 1.1.1
 Author: Katz Web Services, Inc.
 Author URI: http://www.katzwebservices.com
 
@@ -673,7 +673,7 @@ class GFiContact {
             	<h2><?php _e('2. Select the form to tap into.', "gravity-forms-icontact"); ?></h2>
             	<?php
             	$forms = RGFormsModel::get_forms();
-		
+
 				if(isset($config["form_id"])) {
 					foreach($forms as $form) {
 						if($form->id == $config["form_id"]) {
@@ -1036,14 +1036,16 @@ class GFiContact {
 			
 		);
 		
-		foreach($custom_fields as $field) {	
-			extract($field);
-			$fields[] = array(
-				'tag' => $privateName,
-				'name' => $publicName,
-				'req' => false,
-				'custom' => true
-			);
+		if(!empty($custom_fields) && is_array($custom_fields)) {
+			foreach($custom_fields as $field) {	
+				extract($field);
+				$fields[] = array(
+					'tag' => $privateName,
+					'name' => $publicName,
+					'req' => false,
+					'custom' => true
+				);
+			}
 		}
 		
 		return $fields;
