@@ -10,7 +10,7 @@ class iContact {
 	private $accountId;
 	private $clientFolderId;
 	private $debugMode;
-	
+
 	/**
 	 *
 	 * @param type $apiUrl
@@ -19,12 +19,12 @@ class iContact {
 	 * @param type $appId
 	 * @param type $accountId
 	 * @param type $clientFolderId
-	 * @param type $debugMode 
+	 * @param type $debugMode
 	 */
 	public function __construct($apiUrl = '', $username = '', $password = '', $appId = '', $accountId = '', $clientFolderId = null, $debugMode = false) {
-		
+
 		$this->settings = $settings = get_option("gf_icontact_settings");
-		
+
 		$this->debugMode = $debugMode;
 		$this->apiUrl = $this->getApiUrl();
 		$this->username = $settings['username'];
@@ -33,12 +33,12 @@ class iContact {
 		$this->appId = $settings['appid'];
 		$this->accountId = empty($settings['accountid']) ? $this->getAccountId() : $settings['accountid'];
 		$this->clientFolderId = empty($settings['clientfolderid']) ? $this->getClientFolderId() : $settings['clientfolderid'];
-		
+
 		if(is_array($this->settings) && array_diff($this->settings, $settings)) {
 			update_option('gf_icontact_settings', $this->settings);
 		}
 	}
-	
+
 	public function getApiUrl() {
 		if($this->debugMode) {
 			$apiUrl = 'https://app.sandbox.icontact.com/icp'; // $apiUrl;
@@ -47,7 +47,7 @@ class iContact {
 		}
 		return $apiUrl;
 	}
-	
+
 	public function getClientFolderId() {
 		if(empty($this->accountId)) { return false; }
 		if(isset($this->settings) && !empty($this->settings['clientfolderid'])) {
@@ -62,39 +62,39 @@ class iContact {
 		$this->settings['clientfolderid'] = $this->clientFolderId;
 		return $this->clientFolderId;
 	}
-	
+
 	public function setClientFolderId($clientFolderId) {
 		$this->clientFolderId = $clientFolderId;
 	}
-	
+
 	public function setDebugMode($debugMode) {
 		$this->debugMode = $debugMode;
 	}
-	
+
 	public function getAccountId() {
 		if(isset($this->settings) && !empty($this->settings['accountid'])) {
 			return $this->settings['accountid'];
 		}
-		
+
 		$response = $this->callResource("/a/",'GET');
 		if(isset($response['data']) && isset($response['data']['accounts'])) {
 			foreach($response['data']['accounts'] as $account) {
 				$this->accountId = $account['accountId'];
 			}
 		}
-		
+
 		$this->settings['accountid'] = $this->accountId;
-		
+
 		return $this->accountId;
 	}
-	
+
 	// Added by KWS
 	public function testSettings() {
 		$response = $this->callResource("/a/",'GET');
 		$this->dump($response, 'Testing Account Settings');
 		return $response;
 	}
-	
+
 	/**
 	 * Create multiple contacts
 	 * @param array $contacts contains list of contacts with 'email', 'firstName', 'lastName'
@@ -104,7 +104,7 @@ class iContact {
 		$contactIds = null;
 
 		$response = $this->callResource("/a/{$this->accountId}/c/{$this->clientFolderId}/contacts",'POST', $contacts);
-		
+
 		if ($response['code'] == self::STATUS_CODE_SUCCESS) {
 			if(count($response['data']['contacts']) > 0) {
 				foreach($response['data']['contacts'] as $contact) {
@@ -119,25 +119,25 @@ class iContact {
 
 		return $contactIds;
 	}
-	
+
 	/**
 	 * Create a contact
 	 * @param string $email
 	 * @param string $firstName
 	 * @param string $lastName
 	 * @return string $contactId
-	 */	
+	 */
 	public function createContact($email, $fields = array()) {
 		$fields['email'] = $email;
 		$result = $this->createContacts(array($fields));
-		if(is_null($result)) 
+		if(is_null($result))
 			$contactId = null;
 		else
 			$contactId = array_shift($result);
-		
+
 		return $contactId;
 	}
-	
+
 	/**
 	 * Delete a contact
 	 * @param string $contactId
@@ -154,7 +154,7 @@ class iContact {
 			return false;
 		}
 		if($this->debugMode) $this->dump($response);
-		return $success;		
+		return $success;
 	}
 	/**
 	 * Create one or more lists
@@ -170,16 +170,16 @@ class iContact {
 			if(count($response['data']['lists']) > 0) {
 				foreach($response['data']['lists'] as $list) {
 					$listIds[$list['name']] = $list['listId'];
-				}				
+				}
 			}
 		} else {
 			$this->lastError = 'iContact returned ' . $response['code'];
 			return false;
 		}
 		if($this->debugMode) $this->dump($response);
-		return $listIds;		
+		return $listIds;
 	}
-	
+
 	/**
 	 * Create a list
 	 * @param string $listName
@@ -187,23 +187,23 @@ class iContact {
 	 * @param bool $emailOwnerOnChange
 	 * @param bool $welcomeOnManualAdd
 	 * @param bool $welcomeOnSignupAdd
-	 * @return string listId 
+	 * @return string listId
 	 */
 	public function createList($listName, $welcomeMessageId, $emailOwnerOnChange = 0, $welcomeOnManualAdd = 0, $welcomeOnSignupAdd = 0) {
 		$result = $this->createLists(array(array(
-			'name'					=> $listName, 
-			'welcomeMessageId'		=> $welcomeMessageId, 
+			'name'					=> $listName,
+			'welcomeMessageId'		=> $welcomeMessageId,
 			'emailOwnerOnChange'	=> $emailOwnerOnChange,
 			'welcomeOnManualAdd'	=> $welcomeOnManualAdd,
 			'welcomeOnSignupAdd'	=> $welcomeOnSignupAdd
 		)));
-		
+
 		if(is_null($result))
 			$listId = null;
 		else
 			$listId = array_shift($result);
-		
-		return $listId;		
+
+		return $listId;
 	}
 
 	/**
@@ -223,52 +223,52 @@ class iContact {
 		}
 		if($this->debugMode) $this->dump($response);
 		return $success;
-	}	
-	
+	}
+
 	/**
 	 * Get an array containing all available lists
-	 * @return array 
+	 * @return array
 	 */
 	public function getLists() {
 		$lists;
-		
+
 		#$debug = $this->debug;
-		
+
 		$lists = get_transient('icgf_lists');
 		if($lists && (!isset($_REQUEST['refresh']) || (isset($_REQUEST['refresh']) && $_REQUEST['refresh'] !== 'lists'))) {
 			return $lists;
 		}
-		
-		$response = $this->callResource("/a/{$this->accountId}/c/{$this->clientFolderId}/lists",'GET');
+
+		$response = $this->callResource("/a/{$this->accountId}/c/{$this->clientFolderId}/lists?limit=999",'GET');
 		if ($response['code'] == self::STATUS_CODE_SUCCESS) {
 			$lists = $response['data']['lists'];
 		} else {
 			return false;
 		}
 		if($this->debugMode) $this->dump($response);
-		
+
 		#$this->debug = $debug;
-		
+
 		set_transient('icgf_lists', $lists);
-		
-		return $lists;		
+
+		return $lists;
 	}
-	
+
 	/**
 	 * Get an array containing all available custom fields
-	 * @return array 
+	 * @return array
 	 */
 	public function getCustomFields() {
 		$lists;
-		
+
 #		$debug = $this->debug;
 #		$this->debug = true;
-		
+
 		$fields = get_transient('icgf_cf');
 		if($fields && (!isset($_REQUEST['refresh']) || (isset($_REQUEST['refresh']) && $_REQUEST['refresh'] !== 'customfields'))) {
 			return $fields;
 		}
-		
+
 		$response = $this->callResource("/a/{$this->accountId}/c/{$this->clientFolderId}/customfields",'GET');
 		if ($response['code'] == self::STATUS_CODE_SUCCESS) {
 			$fields = isset($response['data']['customfields']) ? $response['data']['customfields'] : false;
@@ -277,24 +277,24 @@ class iContact {
 			return false;
 		}
 		if($this->debugMode) $this->dump($response);
-		
+
 #		$this->debug = $debug;
-		
+
 		set_transient('icgf_cf', $fields);
-		
-		return $fields;		
+
+		return $fields;
 	}
-	
+
 	/**
 	 * Add an array of contacts to a list
 	 * @param string $listId
-	 * @param array $contactIds 
+	 * @param array $contactIds
 	 */
 	public function subscribeContactsToList($listId, $contactIds) {
 		if(!is_array($contactIds) || count($contactIds) < 1) {
 			$this->lastError = 'contactIds array is empty or invalid';
 			return false;
-		}		
+		}
 		foreach($contactIds as $contactId) {
 			$contacts[] = array('contactId'=>$contactId, 'listId'=>$listId, 'status'=>'normal');
 		}
@@ -307,7 +307,7 @@ class iContact {
 		if($this->debugMode) $this->dump($response);
 		return $response;
 	}
-	
+
 	/**
 	 * Send an email to a list or lists
 	 * @param String $messageId
@@ -324,22 +324,22 @@ class iContact {
 			$this->lastError = 'iContact returned ' . $response['code'];
 			return false;
 		}
-		if($this->debugMode) $this->dump($response);		
+		if($this->debugMode) $this->dump($response);
 	}
 	/**
 	 * Function to make the curl request
 	 * @param string $url
 	 * @param type $method
 	 * @param type $data
-	 * @return type 
+	 * @return type
 	 */
 	protected function callResource($url = '', $method, $data = null) {
 		global $wp_version;
-		
+
 		if(!in_array($method, array('POST', 'PUT', 'DELETE', 'GET'))) { $api->lastError = "$method is not a supported method"; return false; }
-		
+
 		$url =  untrailingslashit($this->apiUrl) . $url;
-		
+
 		$headers = array(
 			'Accept' => 'application/json',
 			'Content-Type' => 'application/json',
@@ -358,7 +358,7 @@ class iContact {
 			'sslverify'	=> false,
 			'timeout'	=> 30
 		);
-		
+
 		$result = wp_remote_request($url, $args);
 
 		if(is_wp_error($result)) {
@@ -366,34 +366,34 @@ class iContact {
 			$this->lastError = $error;
 			return false;
 		}
-		
+
 		if($this->debug) {
 			$this->dump(array('$url' => $url, '$args' => $args, '$result' => $result), __('Request sent to iContact', 'gravity-forms-icontact'));
 		}
-		
+
 		$this->lastRequest = $result;
-		
+
 		$body = wp_remote_retrieve_body($result);
-		
+
 		if((isset($result['headers']['content-type']) && $result['headers']['content-type'] == 'text/html') || strpos($body, '<form action="sentry.php"')) {
 			$api->lastError = "Didn't work. Something went quite wrong.";
-			return false;	
+			return false;
 		}
-		
+
 		$body = json_decode($body, true);
-		
+
 		if (wp_remote_retrieve_response_code($result) != self::STATUS_CODE_SUCCESS || !empty($body['errors'])) {
 			foreach($body['errors'] as $error) {
 				$this->lastError .= $error;
 			}
 		}
-		
+
 		return array(
 			'code' => wp_remote_retrieve_response_code($result),
 			'data' => $body,
 		);
 	}
-	
+
 	public function dump($array, $title = '') {
 		if(!is_admin() && current_user_can('gravityforms_icontact')) {
 			if(!empty($title)) {
@@ -403,17 +403,17 @@ class iContact {
 			echo "<pre>" . print_r($array, true) . "</pre>";
 		}
 	}
-	
+
 	private function addDefaultsToLists(&$lists) {
 		foreach($lists as $list) {
 			$list['emailOwnerOnChange']	= 0;
 			$list['welcomeOnManualAdd']	= 0;
-			$list['welcomeOnSignupAdd']	= 0;		
+			$list['welcomeOnSignupAdd']	= 0;
 		}
 	}
-	
+
 	private function addDefaultsToList(&$list) {
-		addDefaultsToLists($list);	
+		addDefaultsToLists($list);
 	}
 }
 

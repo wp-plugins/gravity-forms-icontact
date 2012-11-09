@@ -1,9 +1,9 @@
 === Gravity Forms iContact Add-on ===
 Tags: iContact, gravity forms, forms, gravity, form, crm, gravity form, email, newsletter, i Contact, mailing list, email marketing, newsletters
 Requires at least: 2.8
-Tested up to: 3.4.2
+Tested up to: 3.5
 Stable tag: trunk
-Contributors: katzwebdesign
+Contributors: katzwebdesign, katzwebservices
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms%20iContact&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
 
 Integrate the remarkable Gravity Forms plugin with iContact.
@@ -34,7 +34,7 @@ iContact moves your messages straight from your business to your customers' inbo
 1. Create multiple feeds for different forms that get added to different iContact lists
 1. The Gravity Forms iContact Add-on settings page
 
-== Installation == 
+== Installation ==
 
 1. Upload plugin files to your plugins folder, or install using WordPress' built-in Add New Plugin installer
 1. Activate the plugin
@@ -44,7 +44,7 @@ iContact moves your messages straight from your business to your customers' inbo
 1. If the settings are correct, it will say so.
 1. Follow on-screen instructions for integrating with iContact.
 
-== Frequently Asked Questions == 
+== Frequently Asked Questions ==
 
 = Does this plugin require Gravity Forms? =
 Yes, it does.
@@ -57,7 +57,13 @@ This plugin is released under a GPL license.
 
 == Changelog ==
 
-= 1.1.1 = 
+= 1.2 =
+* Fixed issue where only 20 lists were being fetched for Feed setup
+* Improved error handling by considering "warnings" errors and stopping processing if iContact doesn't successfully create contact.
+* Added: Entries now get assigned a iContact ID that links directly to the edit page for the iContact contact
+* Added: Notes are now added to Entries with the success or error messages from exporting to iContact
+
+= 1.1.1 =
 * Fixed issue users were having where form merge fields don't get pulled properly (see <a href="http://wordpress.org/support/topic/plugin-gravity-forms-icontact-add-on-plugin-does-not-pull-fields-to-match">here</a> and <a href="http://wordpress.org/support/topic/plugin-gravity-forms-icontact-add-on-does-not-pull-in-data-from-forms">here</a>). Issue only affected accounts with no custom fields defined.
 
 = 1.1 =
@@ -72,7 +78,13 @@ This plugin is released under a GPL license.
 
 == Upgrade Notice ==
 
-= 1.1.1 = 
+= 1.2 =
+* Fixed issue where only 20 lists were being fetched for Feed setup
+* Improved error handling by considering "warnings" errors and stopping processing if iContact doesn't successfully create contact.
+* Added: Entries now get assigned a iContact ID that links directly to the edit page for the iContact contact
+* Added: Notes are now added to Entries with the success or error messages from exporting to iContact
+
+= 1.1.1 =
 * Fixed issue users were having where form merge fields don't get pulled properly (see <a href="http://wordpress.org/support/topic/plugin-gravity-forms-icontact-add-on-plugin-does-not-pull-fields-to-match">here</a> and <a href="http://wordpress.org/support/topic/plugin-gravity-forms-icontact-add-on-does-not-pull-in-data-from-forms">here</a>). Issue only affected accounts with no custom fields defined.
 
 = 1.1 =

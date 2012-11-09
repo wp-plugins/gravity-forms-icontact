@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms iContact Add-On
 Plugin URI: http://www.seodenver.com/icontact/
 Description: Integrates Gravity Forms with iContact allowing form submissions to be automatically sent to your iContact account
-Version: 1.1.1
+Version: 1.2
 Author: Katz Web Services, Inc.
 Author URI: http://www.katzwebservices.com
 
@@ -38,15 +38,15 @@ class GFiContact {
 
     //Plugin starting point. Will load appropriate files
     public static function init(){
-		global $pagenow;
+        global $pagenow;
         if($pagenow == 'plugins.php' || defined('RG_CURRENT_PAGE') && RG_CURRENT_PAGE == "plugins.php"){
             //loading translations
             load_plugin_textdomain('gravity-forms-icontact', FALSE, '/gravity-forms-icontact/languages' );
 
             add_action('after_plugin_row_' . self::$path, array('GFiContact', 'plugin_row') );
-            
+
             add_filter('plugin_action_links', array('GFiContact', 'settings_link'), 10, 2 );
-    
+
         }
 
         if(!self::is_gravityforms_supported()){
@@ -103,6 +103,8 @@ class GFiContact {
              //handling post submission.
             add_action("gform_post_submission", array('GFiContact', 'export'), 10, 2);
         }
+
+        add_action('gform_entry_info', array('GFiContact', 'entry_info_link_to_icontact'), 10, 2);
     }
 
     public static function update_feed_active(){
@@ -120,7 +122,7 @@ class GFiContact {
             self::display_plugin_message($message, true);
         }
     }
-    
+
     function settings_link( $links, $file ) {
         static $this_plugin;
         if( ! $this_plugin ) $this_plugin = self::get_base_url();
@@ -132,25 +134,25 @@ class GFiContact {
         }
         return $links;
     }
-    
+
     public static function display_plugin_message($message, $is_error = false){
-    	$style = '';
+        $style = '';
         if($is_error)
             $style = 'style="background-color: #ffebe8;"';
 
         echo '</tr><tr class="plugin-update-tr"><td colspan="5" class="plugin-update"><div class="update-message" ' . $style . '>' . $message . '</div></td>';
     }
 
-    
+
     //Returns true if the current page is an Feed pages. Returns false if not
     private static function is_icontact_page(){
-    	global $plugin_page; $current_page = '';
+        global $plugin_page; $current_page = '';
         $icontact_pages = array("gf_icontact");
-        
+
         if(isset($_GET['page'])) {
-			$current_page = trim(strtolower($_GET["page"]));
-		}
-		
+            $current_page = trim(strtolower($_GET["page"]));
+        }
+
         return (in_array($plugin_page, $icontact_pages) || in_array($current_page, $icontact_pages));
     }
 
@@ -188,8 +190,8 @@ class GFiContact {
     }
 
     public static function settings_page(){
-		
-		
+
+
         if(isset($_POST["uninstall"])){
             check_admin_referer("uninstall", "gf_icontact_uninstall");
             self::uninstall();
@@ -201,72 +203,72 @@ class GFiContact {
         }
         else if(isset($_POST["gf_icontact_submit"])){
             check_admin_referer("update", "gf_icontact_update");
-           	$settings = array(
-            	"username" => stripslashes($_POST["gf_icontact_username"]), 
-            	"password" => stripslashes($_POST["gf_icontact_password"]), 
-            	"appid" => stripslashes($_POST["gf_icontact_appid"]),
-            	"debug" => isset($_POST["gf_icontact_debug"])
+            $settings = array(
+                "username" => stripslashes($_POST["gf_icontact_username"]),
+                "password" => stripslashes($_POST["gf_icontact_password"]),
+                "appid" => stripslashes($_POST["gf_icontact_appid"]),
+                "debug" => isset($_POST["gf_icontact_debug"])
             );
             update_option("gf_icontact_settings", $settings);
         }
         else{
             $settings = get_option("gf_icontact_settings");
         }
-        
+
         $settings = wp_parse_args($settings, array(
-            	"username" => '', 
-            	"password" => '', 
-            	'appid' => '',
-            	"debug" => false,
+                "username" => '',
+                "password" => '',
+                'appid' => '',
+                "debug" => false,
             ));
-          
-        $api = self::get_api();	
-		
+
+        $api = self::get_api();
+
         $message = ''; $style = '';
-		if(!empty($settings["username"]) && !empty($settings["password"]) && empty($api->lastError)){
+        if(!empty($settings["username"]) && !empty($settings["password"]) && empty($api->lastError)){
             $message = sprintf(__("Valid username and API key. Now go %sconfigure form integration with iContact%s!", "gravity-forms-icontact"), '<a href="'.admin_url('admin.php?page=gf_icontact').'">', '</a>');
             $class = "updated valid_credentials";
             $valid = true;
         } else if(!empty($settings["username"]) || !empty($settings["password"])){
-        	$message = $api->lastError;
-        	$valid = false;
+            $message = $api->lastError;
+            $valid = false;
             $class = "error invalid_credentials";
         } else if (empty($settings["username"]) && empty($settings["password"])) {
-			$message = sprintf(__('<div style="max-width: 800px; border-bottom:1px solid #ddd; margin-bottom:10px; padding-bottom:10px;" class="wrap"><h2>%s</h2><a href="http://katz.si/icontact" class="alignright" style="text-align:center; margin-left:10px;"><img src="%s" width="120" height="90" alt="Try iContact for Free" /><span style="display:block;">Sign Up Now</span></a>%s<div class="clear"></div></div><div class="clear"></div>', "gravity-forms-icontact"), __('This plugin requires an iContact account.', 'gravity-forms-icontact'), plugins_url('images/graphic.gif', __FILE__), __('<p style="font-size:1.4em; line-height:1.3; font-weight:200;">In order to integrate this plugin with Gravity Forms, you need an iContact account. <a href="http://katz.si/icontact">Sign up for a free iContact account now.</a></p>', 'gravity-forms-icontact'));
-			$valid = false;
-			$class = '';
-			$style = '';
+            $message = sprintf(__('<div style="max-width: 800px; border-bottom:1px solid #ddd; margin-bottom:10px; padding-bottom:10px;" class="wrap"><h2>%s</h2><a href="http://katz.si/icontact" class="alignright" style="text-align:center; margin-left:10px;"><img src="%s" width="120" height="90" alt="Try iContact for Free" /><span style="display:block;">Sign Up Now</span></a>%s<div class="clear"></div></div><div class="clear"></div>', "gravity-forms-icontact"), __('This plugin requires an iContact account.', 'gravity-forms-icontact'), plugins_url('images/graphic.gif', __FILE__), __('<p style="font-size:1.4em; line-height:1.3; font-weight:200;">In order to integrate this plugin with Gravity Forms, you need an iContact account. <a href="http://katz.si/icontact">Sign up for a free iContact account now.</a></p>', 'gravity-forms-icontact'));
+            $valid = false;
+            $class = '';
+            $style = '';
         }
 
-		if($message) {
-			$message = str_replace('Api', 'API', $message);
-	        ?>
-	        <div id="message" class="<?php echo $class ?>" style="<?php echo $style ?>"><?php echo wpautop($message); ?></div>
-	        <?php 
+        if($message) {
+            $message = str_replace('Api', 'API', $message);
+            ?>
+            <div id="message" class="<?php echo $class ?>" style="<?php echo $style ?>"><?php echo wpautop($message); ?></div>
+            <?php
         }
         ?>
         <form method="post" action="<?php echo remove_query_arg('refresh'); ?>">
             <?php wp_nonce_field("update", "gf_icontact_update") ?>
             <?php if(!$valid)  { ?>
             <div class="delete-alert alert_gray">
-            	<h4><?php _e(sprintf('If you have issues with these steps, please %scontact iContact%s by calling (877) 820-7837 in the US or (919) 957-6150.', '<a href="http://www.icontact.com/contact">', '</a>'), "gravity-forms-icontact"); ?></h4>
-            	<h3><?php _e('How to set up integration:', "gravity-forms-icontact"); ?></h3>
-            	<ol class="ol-decimal" style="margin-top:1em;">
-					<li style="list-style:decimal outside;"><?php echo sprintf(__('%sFollow this link to Register an Application%s', "gravity-forms-icontact"), '<a href="https://app.icontact.com/icp/core/registerapp" target="_blank">', '</a>', "gravity-forms-icontact") ?></li>
-					<li style="list-style:decimal outside;"><?php _e('If necessary, enter your iContact username and password to log in to iContact.', "gravity-forms-icontact") ?></li>
-					<li style="list-style:decimal outside;"><?php _e(sprintf('Set the Application Name and Description to %siContact Gravity Forms Add-on%s. Submit the form by clicking the button "Get App ID."','<em>', '</em>'), "gravity-forms-icontact") ?></li>
-					<li style="list-style:decimal outside;"><?php _e('Click the link on the bottom of the next page that says "To authenticate to the API, you must enable this AppId for your account."', "gravity-forms-icontact") ?></li>
-					<li style="list-style:decimal outside;"><?php _e('Copy the Application ID - you&rsquo;ll be entering it on this page.', "gravity-forms-icontact") ?></li>
-					<li style="list-style:decimal outside;"><?php _e(sprintf('Enter a password that is not your iContact password. %sCopy this password%s - you&rsquo;ll be entering it on this page.','<strong>','</strong>'), "gravity-forms-icontact") ?></li>
-					<li style="list-style:decimal outside;"><?php _e('Click Save.', "gravity-forms-icontact") ?></li>
-					<li style="list-style:decimal outside;"><?php _e('You should see the message \'The application "iContact Gravity Forms Add-On" can now access your account, using the password you provided.\'', "gravity-forms-icontact") ?></li>
-					<li style="list-style:decimal outside;"><?php _e('Come back to this settings page and enter your Application ID and Application Password that you copied from the steps above.', "gravity-forms-icontact") ?></li>
-					<li style="list-style:decimal outside;"><?php _e('Save these settings, and you should be done!', "gravity-forms-icontact") ?></li>
-				</ol>
-			</div>
+                <h4><?php _e(sprintf('If you have issues with these steps, please %scontact iContact%s by calling (877) 820-7837 in the US or (919) 957-6150.', '<a href="http://www.icontact.com/contact">', '</a>'), "gravity-forms-icontact"); ?></h4>
+                <h3><?php _e('How to set up integration:', "gravity-forms-icontact"); ?></h3>
+                <ol class="ol-decimal" style="margin-top:1em;">
+                    <li style="list-style:decimal outside;"><?php echo sprintf(__('%sFollow this link to Register an Application%s', "gravity-forms-icontact"), '<a href="https://app.icontact.com/icp/core/registerapp" target="_blank">', '</a>', "gravity-forms-icontact") ?></li>
+                    <li style="list-style:decimal outside;"><?php _e('If necessary, enter your iContact username and password to log in to iContact.', "gravity-forms-icontact") ?></li>
+                    <li style="list-style:decimal outside;"><?php _e(sprintf('Set the Application Name and Description to %siContact Gravity Forms Add-on%s. Submit the form by clicking the button "Get App ID."','<em>', '</em>'), "gravity-forms-icontact") ?></li>
+                    <li style="list-style:decimal outside;"><?php _e('Click the link on the bottom of the next page that says "To authenticate to the API, you must enable this AppId for your account."', "gravity-forms-icontact") ?></li>
+                    <li style="list-style:decimal outside;"><?php _e('Copy the Application ID - you&rsquo;ll be entering it on this page.', "gravity-forms-icontact") ?></li>
+                    <li style="list-style:decimal outside;"><?php _e(sprintf('Enter a password that is not your iContact password. %sCopy this password%s - you&rsquo;ll be entering it on this page.','<strong>','</strong>'), "gravity-forms-icontact") ?></li>
+                    <li style="list-style:decimal outside;"><?php _e('Click Save.', "gravity-forms-icontact") ?></li>
+                    <li style="list-style:decimal outside;"><?php _e('You should see the message \'The application "iContact Gravity Forms Add-On" can now access your account, using the password you provided.\'', "gravity-forms-icontact") ?></li>
+                    <li style="list-style:decimal outside;"><?php _e('Come back to this settings page and enter your Application ID and Application Password that you copied from the steps above.', "gravity-forms-icontact") ?></li>
+                    <li style="list-style:decimal outside;"><?php _e('Save these settings, and you should be done!', "gravity-forms-icontact") ?></li>
+                </ol>
+            </div>
             <?php } ?>
             <h3><?php _e("iContact Account Information", "gravity-forms-icontact") ?></h3>
-            
+
             <table class="form-table">
                 <tr>
                     <th scope="row"><label for="gf_icontact_username"><?php _e("iContact Username", "gravity-forms-icontact"); ?></label> </th>
@@ -354,11 +356,15 @@ class GFiContact {
             <h2><?php _e("iContact Feeds", "gravity-forms-icontact"); ?>
             <a class="button add-new-h2" href="admin.php?page=gf_icontact&view=edit&id=0"><?php _e("Add New", "gravity-forms-icontact") ?></a>
             </h2>
-			
-			<ul class="subsubsub">
-	            <li><a href="<?php echo admin_url('admin.php?page=gf_settings&addon=iContact'); ?>">iContact Settings</a> |</li>
-	            <li><a href="<?php echo admin_url('admin.php?page=gf_icontact'); ?>" class="current">iContact Feeds</a></li>
-	        </ul>
+
+            <div class="updated" id="message" style="margin-top:20px;">
+                <p><?php _e('Do you like this free plugin? <a href="http://katz.si/rategfic">Please review it on WordPress.org</a>! <small class="description alignright">Note: You must be logged in to WordPress.org to leave a review!</small>', 'gravity-forms-icontact'); ?></p>
+            </div>
+
+            <ul class="subsubsub" style="margin-top:0;">
+                <li><a href="<?php echo admin_url('admin.php?page=gf_settings&addon=iContact'); ?>">iContact Settings</a> |</li>
+                <li><a href="<?php echo admin_url('admin.php?page=gf_icontact'); ?>" class="current">iContact Feeds</a></li>
+            </ul>
 
             <form id="feed_form" method="post">
                 <?php wp_nonce_field('list_action', 'gf_icontact_list') ?>
@@ -425,27 +431,27 @@ class GFiContact {
                                 <?php
                             }
                         }
-                        else { 
-                        	$api = self::get_api();
-	                        if(!empty($api) && empty($api->lastError)){
-	                            ?>
-	                            <tr>
-	                                <td colspan="4" style="padding:20px;">
-	                                    <?php _e(sprintf("You don't have any iContact feeds configured. Let's go %screate one%s!", '<a href="'.admin_url('admin.php?page=gf_icontact&view=edit&id=0').'">', "</a>"), "gravity-forms-icontact"); ?>
-	                                </td>
-	                            </tr>
-	                            <?php
-	                        }
-	                        else{
-	                            ?>
-	                            <tr>
-	                                <td colspan="4" style="padding:20px;">
-	                                    <?php _e(sprintf("To get started, please configure your %siContact Settings%s.", '<a href="admin.php?page=gf_settings&addon=iContact">', "</a>"), "gravity-forms-icontact"); ?>
-	                                </td>
-	                            </tr>
-	                            <?php
-	                        }
-	                    }
+                        else {
+                            $api = self::get_api();
+                            if(!empty($api) && empty($api->lastError)){
+                                ?>
+                                <tr>
+                                    <td colspan="4" style="padding:20px;">
+                                        <?php _e(sprintf("You don't have any iContact feeds configured. Let's go %screate one%s!", '<a href="'.admin_url('admin.php?page=gf_icontact&view=edit&id=0').'">', "</a>"), "gravity-forms-icontact"); ?>
+                                    </td>
+                                </tr>
+                                <?php
+                            }
+                            else{
+                                ?>
+                                <tr>
+                                    <td colspan="4" style="padding:20px;">
+                                        <?php _e(sprintf("To get started, please configure your %siContact Settings%s.", '<a href="admin.php?page=gf_settings&addon=iContact">', "</a>"), "gravity-forms-icontact"); ?>
+                                    </td>
+                                </tr>
+                                <?php
+                            }
+                        }
                         ?>
                     </tbody>
                 </table>
@@ -491,13 +497,13 @@ class GFiContact {
         if(!class_exists("iContact"))
             require_once("api/iContact.class.php");
 
-		return new iContact();
+        return new iContact();
     }
 
     private static function edit_page(){
         ?>
         <style type="text/css">
-        	label span.howto { cursor: default; }
+            label span.howto { cursor: default; }
             .icontact_col_heading{padding-bottom:2px; border-bottom: 1px solid #ccc; font-weight:bold; width:50%;}
             #icontact_field_list table { width: 400px; border-collapse: collapse; margin-top: 1em; }
             .icontact_field_cell {padding: 6px 17px 0 0; margin-right:15px;}
@@ -519,15 +525,15 @@ class GFiContact {
             <img alt="<?php _e("iContact Feeds", "gravity-forms-icontact") ?>" src="<?php echo self::get_base_url()?>/images/icontact_wordpress_icon_32.png" style="float:left; margin:15px 7px 0 0;"/>
             <h2><?php _e("iContact Feeds", "gravity-forms-icontact"); ?></h2>
             <ul class="subsubsub">
-	            <li><a href="<?php echo admin_url('admin.php?page=gf_settings&addon=iContact'); ?>">iContact Settings</a> |</li>
-	            <li><a href="<?php echo admin_url('admin.php?page=gf_icontact'); ?>">iContact Feeds</a></li>
-	        </ul>
-		<div class="clear"></div>
+                <li><a href="<?php echo admin_url('admin.php?page=gf_settings&addon=iContact'); ?>">iContact Settings</a> |</li>
+                <li><a href="<?php echo admin_url('admin.php?page=gf_icontact'); ?>">iContact Feeds</a></li>
+            </ul>
+        <div class="clear"></div>
         <?php
         //getting iContact API
         $api = self::get_api();
-        
-		//ensures valid credentials were entered in the settings page
+
+        //ensures valid credentials were entered in the settings page
         if(!empty($api->lastError)){
             ?>
             <div class="error" id="message" style="margin-top:20px;"><?php echo wpautop(sprintf(__("We are unable to login to iContact with the provided username and API key. Please make sure they are valid in the %sSettings Page%s", "gravity-forms-icontact"), "<a href='?page=gf_settings&addon=iContact'>", "</a>")); ?></div>
@@ -538,29 +544,29 @@ class GFiContact {
         //getting setting id (0 when creating a new one)
         $id = !empty($_POST["icontact_setting_id"]) ? $_POST["icontact_setting_id"] : absint($_GET["id"]);
         $config = empty($id) ? array("meta" => array(), "is_active" => true) : GFiContactData::get_feed($id);
-		
-		
+
+
         //getting merge vars
         $merge_vars = array();
-		
-		//updating meta information
+
+        //updating meta information
         if(isset($_POST["gf_icontact_submit"])){
-        	$list_ids = $list_names = array();
-			foreach($_POST["gf_icontact_list"] as $list){
-				list($list_id, $list_name) = explode("|:|", stripslashes($list));
-				$list_ids[] = $list_id;
-				$list_names[] =  str_replace(',', '&#44;', $list_name); // To keep commas for explode, we convert them to HTML
-			}
-			
+            $list_ids = $list_names = array();
+            foreach($_POST["gf_icontact_list"] as $list){
+                list($list_id, $list_name) = explode("|:|", stripslashes($list));
+                $list_ids[] = $list_id;
+                $list_names[] =  str_replace(',', '&#44;', $list_name); // To keep commas for explode, we convert them to HTML
+            }
+
             $config["meta"]["contact_list_id"] = empty($list_ids) ? 0 : implode(',', $list_ids);
             $config["meta"]["contact_list_name"] = implode(',', $list_names);
             $config["form_id"] = absint($_POST["gf_icontact_form"]);
 
             $is_valid = true;
             $merge_vars = self::listMergeVars();
-            
+
             $field_map = array();
-                        
+
             foreach($merge_vars as $var){
                 $field_name = "icontact_map_field_" . $var['tag'];
                 $mapped_field = isset($_POST[$field_name]) ? stripslashes($_POST[$field_name]) : '';
@@ -570,22 +576,22 @@ class GFiContact {
                 else{
                     unset($field_map[$var['tag']]);
                     if(!empty($var["req"])) {
-                    	$is_valid = false;
+                        $is_valid = false;
                     }
                 }
                 unset($_POST["{$field_name}"]);
             }
-            
+
             // Go through the items that were not in the field map;
             // the Custom Fields
             foreach($_POST as $k => $v) {
-            	if(preg_match('/icontact\_map\_field\_/', $k)) {
-            		$tag = str_replace('icontact_map_field_', '', $k);
-            		$field_map[$tag] = stripslashes($_POST[$k]);
-	           	}
+                if(preg_match('/icontact\_map\_field\_/', $k)) {
+                    $tag = str_replace('icontact_map_field_', '', $k);
+                    $field_map[$tag] = stripslashes($_POST[$k]);
+                }
             }
-                        
-			$config["meta"]["field_map"] = $field_map;
+
+            $config["meta"]["field_map"] = $field_map;
             #$config["meta"]["double_optin"] = !empty($_POST["icontact_double_optin"]) ? true : false;
             #$config["meta"]["welcome_email"] = !empty($_POST["icontact_welcome_email"]) ? true : false;
 
@@ -593,14 +599,14 @@ class GFiContact {
             $config["meta"]["optin_field_id"] = $config["meta"]["optin_enabled"] ? isset($_POST["icontact_optin_field_id"]) ? $_POST["icontact_optin_field_id"] : '' : "";
             $config["meta"]["optin_operator"] = $config["meta"]["optin_enabled"] ? isset($_POST["icontact_optin_operator"]) ? $_POST["icontact_optin_operator"] : '' : "";
             $config["meta"]["optin_value"] = $config["meta"]["optin_enabled"] ? $_POST["icontact_optin_value"] : "";
-			
-			
-			
+
+
+
             if($is_valid){
                 $id = GFiContactData::update_feed($id, $config["form_id"], $config["is_active"], $config["meta"]);
                 ?>
                 <div id="message" class="updated fade" style="margin-top:10px;"><p><?php echo sprintf(__("Feed Updated. %sback to list%s", "gravity-forms-icontact"), "<a href='?page=gf_icontact'>", "</a>") ?></p>
-	                <input type="hidden" name="icontact_setting_id" value="<?php echo $id ?>"/>
+                    <input type="hidden" name="icontact_setting_id" value="<?php echo $id ?>"/>
                 </div>
                 <?php
             }
@@ -610,43 +616,43 @@ class GFiContact {
                 <?php
             }
         }
-		if(!function_exists('gform_tooltip')) {
-			require_once(GFCommon::get_base_path() . "/tooltips.php");
-		}
-		
+        if(!function_exists('gform_tooltip')) {
+            require_once(GFCommon::get_base_path() . "/tooltips.php");
+        }
+
         ?>
         <form method="post" action="<?php echo remove_query_arg('refresh'); ?>">
             <input type="hidden" name="icontact_setting_id" value="<?php echo $id ?>"/>
             <div class="margin_vertical_10">
-            	<h2><?php _e('1. Select the lists to merge with.', "gravity-forms-icontact"); ?></h2>
+                <h2><?php _e('1. Select the lists to merge with.', "gravity-forms-icontact"); ?></h2>
                 <label for="gf_icontact_list" class="left_header"><?php _e("iContact List", "gravity-forms-icontact"); ?> <?php gform_tooltip("icontact_contact_list") ?> <span class="howto"><?php _e(sprintf("%sRefresh lists%s", '<a href="'.add_query_arg('refresh', 'lists').'">','</a>'), "gravity-forms-icontact"); ?></span></label>
-                
-                <?php 
+
+                <?php
                 $trans = get_transient('icgf_lists');
-                if(!isset($_POST["gf_icontact_submit"]) && (!$trans || ($trans && isset($_REQUEST['refresh']) && $_REQUEST['refresh'] === 'lists'))) { ?> 
-					<p id='lists_loading' class="hide-if-no-js" style='padding:5px;'><img src="<?php echo self::get_base_url() ?>/images/loading.gif" id="icontact_wait" style="padding-right:5px;" width="16" height="16" /> <?php _e('Lists are being loaded', 'gravity-forms-icontact'); ?></p>
+                if(!isset($_POST["gf_icontact_submit"]) && (!$trans || ($trans && isset($_REQUEST['refresh']) && $_REQUEST['refresh'] === 'lists'))) { ?>
+                    <p id='lists_loading' class="hide-if-no-js" style='padding:5px;'><img src="<?php echo self::get_base_url() ?>/images/loading.gif" id="icontact_wait" style="padding-right:5px;" width="16" height="16" /> <?php _e('Lists are being loaded', 'gravity-forms-icontact'); ?></p>
                <?php
-	               }
-               
+                   }
+
                 //getting all contact lists
                 $lists = $api->getLists();
-				
+
                 if (!$lists){
                     echo __("Could not load iContact contact lists. <br/>Error: ", "gravity-forms-icontact");
                     echo isset($api->errorMessage) ? $api->errorMessage : '';
                 }
                 else{
-                	
-					if(isset($config["meta"]["contact_list_id"])) {
-	                	$contact_lists = explode(',' , $config["meta"]["contact_list_id"]);
-	                } else {
-	                	$contact_lists = array();
-	                }
+
+                    if(isset($config["meta"]["contact_list_id"])) {
+                        $contact_lists = explode(',' , $config["meta"]["contact_list_id"]);
+                    } else {
+                        $contact_lists = array();
+                    }
                     ?>
                  <ul id="gf_icontact_list_list" class="hide-if-js">
                     <?php
                     foreach ($lists as $key => $list){
-                    	$name = empty($list['publicname']) ? $list['name'] : $list['publicname'];
+                        $name = empty($list['publicname']) ? $list['name'] : $list['publicname'];
                         $selected = in_array($list['listId'], $contact_lists) ? "checked='checked'" : "";
                         ?>
                         <li><label style="display:block;" for="gf_icontact_list_<?php echo esc_html($list['listId']); ?>"><input type="checkbox" name="gf_icontact_list[]" id="gf_icontact_list_<?php echo esc_html($list['listId']); ?>" value="<?php echo esc_html($list['listId']) . "|:|" . esc_html($name) ?>" <?php echo $selected ?> /> <?php echo esc_html($name) ?></label></li>
@@ -656,11 +662,11 @@ class GFiContact {
                   </ul>
                   <script type="text/javascript">
                   //<![CDATA[
-                 	if(jQuery('#lists_loading').length && jQuery('#gf_icontact_list_list').length) {
-                 		jQuery('#lists_loading').fadeOut(function() { jQuery('#gf_icontact_list_list').fadeIn(); });
-	                 } else if(jQuery('#gf_icontact_list_list').length) {
-	                 	jQuery('#gf_icontact_list_list').show();
-	                 }
+                    if(jQuery('#lists_loading').length && jQuery('#gf_icontact_list_list').length) {
+                        jQuery('#lists_loading').fadeOut(function() { jQuery('#gf_icontact_list_list').fadeIn(); });
+                     } else if(jQuery('#gf_icontact_list_list').length) {
+                        jQuery('#gf_icontact_list_list').show();
+                     }
                  //]]>
                  </script>
                 <?php
@@ -668,26 +674,26 @@ class GFiContact {
                 ?>
                 <div class="clear"></div>
             </div>
-			<?php flush(); ?>
+            <?php flush(); ?>
             <div id="icontact_form_container" valign="top" class="margin_vertical_10" <?php echo empty($config["meta"]["contact_list_id"]) ? "style='display:none;'" : "" ?>>
-            	<h2><?php _e('2. Select the form to tap into.', "gravity-forms-icontact"); ?></h2>
-            	<?php
-            	$forms = RGFormsModel::get_forms();
+                <h2><?php _e('2. Select the form to tap into.', "gravity-forms-icontact"); ?></h2>
+                <?php
+                $forms = RGFormsModel::get_forms();
 
-				if(isset($config["form_id"])) {
-					foreach($forms as $form) {
-						if($form->id == $config["form_id"]) {
-							echo '<h3 style="margin:0; padding:0 0 1em 1.75em; font-weight:normal;">'.sprintf(__('(Currently linked with %s)', "gravity-forms-icontact"), $form->title).'</h3>';
-						}
-					}
-				}
-				?>
+                if(isset($config["form_id"])) {
+                    foreach($forms as $form) {
+                        if($form->id == $config["form_id"]) {
+                            echo '<h3 style="margin:0; padding:0 0 1em 1.75em; font-weight:normal;">'.sprintf(__('(Currently linked with %s)', "gravity-forms-icontact"), $form->title).'</h3>';
+                        }
+                    }
+                }
+                ?>
                 <label for="gf_icontact_form" class="left_header"><?php _e("Gravity Form", "gravity-forms-icontact"); ?> <?php gform_tooltip("icontact_gravity_form") ?></label>
 
                 <select id="gf_icontact_form" name="gf_icontact_form" onchange="SelectForm(jQuery('#gf_icontact_list_list input').serialize(), jQuery(this).val());">
                 <option value=""><?php _e("Select a form", "gravity-forms-icontact"); ?> </option>
                 <?php
-                
+
                 foreach($forms as $form){
                     $selected = absint($form->id) == $config["form_id"] ? "selected='selected'" : "";
                     ?>
@@ -701,11 +707,11 @@ class GFiContact {
             </div>
             <div class="clear"></div>
             <div id="icontact_field_group" valign="top" <?php echo empty($config["meta"]["contact_list_id"]) || empty($config["form_id"]) ? "style='display:none;'" : "" ?>>
-            	<div id="icontact_field_container" valign="top" class="margin_vertical_10" >
-                	<h2><?php _e('3. Map form fields to iContact fields.', "gravity-forms-icontact"); ?></h2>
-                	<h3 class="description"><?php _e('About field mapping:', "gravity-forms-icontact"); ?></h2>
-                	<p class="description" style="margin-bottom:1em;"><?php _e(sprintf('%sIf you don&rsquo;t see a field listed, you need to create it in iContact first under %s[Your Name] > Custom Fields%s.%sOnly fields mapped below will be added to iContact.%sCustom Fields are defined inside the iContact application. %sLearn more about using Custom Fields in iContact%s.%s', '<li>', '<em style="font-style:normal;">', '</em>', '</li><li>','</li><li>', '<a href="http://blog.icontact.com/blog/effectively-using-custom-fields-and-segments-for-specific-interests/" target="_blank">', '</a>', '</li>'), "gravity-forms-icontact"); ?></p>
-                	<label for="icontact_fields" class="left_header"><?php _e("Standard Fields", "gravity-forms-icontact"); ?> <?php gform_tooltip("icontact_map_fields") ?></label>
+                <div id="icontact_field_container" valign="top" class="margin_vertical_10" >
+                    <h2><?php _e('3. Map form fields to iContact fields.', "gravity-forms-icontact"); ?></h2>
+                    <h3 class="description"><?php _e('About field mapping:', "gravity-forms-icontact"); ?></h2>
+                    <p class="description" style="margin-bottom:1em;"><?php _e(sprintf('%sIf you don&rsquo;t see a field listed, you need to create it in iContact first under %s[Your Name] > Custom Fields%s.%sOnly fields mapped below will be added to iContact.%sCustom Fields are defined inside the iContact application. %sLearn more about using Custom Fields in iContact%s.%s', '<li>', '<em style="font-style:normal;">', '</em>', '</li><li>','</li><li>', '<a href="http://blog.icontact.com/blog/effectively-using-custom-fields-and-segments-for-specific-interests/" target="_blank">', '</a>', '</li>'), "gravity-forms-icontact"); ?></p>
+                    <label for="icontact_fields" class="left_header"><?php _e("Standard Fields", "gravity-forms-icontact"); ?> <?php gform_tooltip("icontact_map_fields") ?></label>
                     <div id="icontact_field_list">
                     <?php
                     if(!empty($config["form_id"])){
@@ -725,7 +731,7 @@ class GFiContact {
                     </div>
                     <div class="clear"></div>
                 </div>
-				
+
                 <div id="icontact_optin_container" valign="top" class="margin_vertical_10">
                     <label for="icontact_optin" class="left_header"><?php _e("Opt-In Condition", "gravity-forms-icontact"); ?> <?php gform_tooltip("icontact_optin_condition") ?></label>
                     <div id="icontact_optin">
@@ -787,51 +793,51 @@ class GFiContact {
             </div>
         </form>
         </div>
-		
+
 <script type="text/javascript">
 //<![CDATA[
-	jQuery(document).ready(function($) { 
-			$('#gf_icontact_list_list').live('load change', function() {
-				$('#lists_loading').hide();
-			});
-			$("#gf_icontact_list_list input").bind('click change', function() {
-				if($("#gf_icontact_list_list input:checked").length > 0) {
-					SelectList(1);
-				} else {
-					SelectList(false);
-					jQuery("#gf_icontact_form").val("");
-				}
-			});
-			
-	<?php if(isset($_REQUEST['id'])) { ?>
-		$('#icontact_field_list').live('load', function() {
-			$('.icontact_field_cell select').each(function() {
-				var $select = $(this);
-				if($().prop) {
-					var label = $.trim($('label[for='+$(this).prop('name')+']').text());
-				} else {
-					var label = $.trim($('label[for='+$(this).attr('name')+']').text());
-				}
-				label = label.replace(' *', '');
-				
-				if($select.val() === '') {
-					$('option', $select).each(function() {
-						
-						if($(this).text() === label) {
-							if($().prop) {
-								$(this).prop('selected', true);
-							} else {
-								$(this).attr('selected', true);
-							}
-						}
-					});
-				}
-			});
-		});
-	<?php } ?>
-	});
-		
-		function SelectList(listId){
+    jQuery(document).ready(function($) {
+            $('#gf_icontact_list_list').live('load change', function() {
+                $('#lists_loading').hide();
+            });
+            $("#gf_icontact_list_list input").bind('click change', function() {
+                if($("#gf_icontact_list_list input:checked").length > 0) {
+                    SelectList(1);
+                } else {
+                    SelectList(false);
+                    jQuery("#gf_icontact_form").val("");
+                }
+            });
+
+    <?php if(isset($_REQUEST['id'])) { ?>
+        $('#icontact_field_list').live('load', function() {
+            $('.icontact_field_cell select').each(function() {
+                var $select = $(this);
+                if($().prop) {
+                    var label = $.trim($('label[for='+$(this).prop('name')+']').text());
+                } else {
+                    var label = $.trim($('label[for='+$(this).attr('name')+']').text());
+                }
+                label = label.replace(' *', '');
+
+                if($select.val() === '') {
+                    $('option', $select).each(function() {
+
+                        if($(this).text() === label) {
+                            if($().prop) {
+                                $(this).prop('selected', true);
+                            } else {
+                                $(this).attr('selected', true);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    <?php } ?>
+    });
+
+        function SelectList(listId){
             if(listId){
                 jQuery("#icontact_form_container").slideDown();
                // jQuery("#gf_icontact_form").val("");
@@ -891,7 +897,7 @@ class GFiContact {
 
                 jQuery("#icontact_field_list").html(fieldList);
                 jQuery("#icontact_field_group").slideDown();
-				jQuery('#icontact_field_list').trigger('load');
+                jQuery('#icontact_field_list').trigger('load');
             }
             else{
                 jQuery("#icontact_field_group").slideUp();
@@ -959,7 +965,7 @@ class GFiContact {
 
 //]]>
 </script>
-		
+
         <?php
 
     }
@@ -980,16 +986,16 @@ class GFiContact {
     }
 
     public static function select_icontact_form(){
-		check_ajax_referer("gf_select_icontact_form", "gf_select_icontact_form");
-        
+        check_ajax_referer("gf_select_icontact_form", "gf_select_icontact_form");
+
         $api = self::get_api();
-        
+
         if(!empty($api->lastError) || !isset($_POST["list_ids"])) {
             die("EndSelectForm();");
         }
-        
+
         parse_str($_POST["list_ids"], $lists);
-			
+
         $form_id =  intval($_POST["form_id"]);
 
         $setting_id =  0;
@@ -1008,98 +1014,98 @@ class GFiContact {
         //$fields = $form["fields"];
         die("EndSelectForm('" . str_replace("'", "\'", $str) . "', " . GFCommon::json_encode($form) . ");");
     }
-    
+
     private function listMergeVars() {
-    	// From http://developer.icontact.com/documentation/contacts/
-    	
+        // From http://developer.icontact.com/documentation/contacts/
+
         $api = self::get_api();
-    	$custom_fields = $api->getCustomFields();
-		
-		$fields = array(
-			array('tag'=>'email', 'req' => true, 'name' => __("Email")),
-			array('tag'=>'prefix', 	  'req' => false, 'name' => __("Name (Prefix)")),
-			array('tag'=>'firstName', 	  'req' => false, 'name' => __("Name (First)")),
-			array('tag'=>'lastName',	  'req' => false, 'name' => __("Name (Last)")),
-			array('tag'=>'suffix', 	  'req' => false, 'name' => __("Name (Suffix)")),
-			
-			array('tag'=>'business', 'req' => false, 'name' => __("Company")),
-			
-			array('tag'=>'street','req' => false, 'name' => __("Address (Street Address)")),
-			array('tag'=>'street2','req' => false, 'name' => __("Address (Address Line 2)")),
-			array('tag'=>'city',	  'req' => false, 'name' => __("Address (City)")),
-			array('tag'=>'state', 'req' => false, 'name' => __("Address (State / Province)")),
-			array('tag'=>'postalCode',	  'req' => false, 'name' => __("Address (Zip / Postal Code)")),
-			
-			array('tag'=>'phone',   'req' => false, 'name' => __("Phone")),
-			array('tag'=>'fax',   'req' => false, 'name' => __("Fax")),
-			array('tag'=>'status', 'req' => false, 'name' => __("Subscription Status"))
-			
-		);
-		
-		if(!empty($custom_fields) && is_array($custom_fields)) {
-			foreach($custom_fields as $field) {	
-				extract($field);
-				$fields[] = array(
-					'tag' => $privateName,
-					'name' => $publicName,
-					'req' => false,
-					'custom' => true
-				);
-			}
-		}
-		
-		return $fields;
-	}
+        $custom_fields = $api->getCustomFields();
+
+        $fields = array(
+            array('tag'=>'email', 'req' => true, 'name' => __("Email")),
+            array('tag'=>'prefix',    'req' => false, 'name' => __("Name (Prefix)")),
+            array('tag'=>'firstName',     'req' => false, 'name' => __("Name (First)")),
+            array('tag'=>'lastName',      'req' => false, 'name' => __("Name (Last)")),
+            array('tag'=>'suffix',    'req' => false, 'name' => __("Name (Suffix)")),
+
+            array('tag'=>'business', 'req' => false, 'name' => __("Company")),
+
+            array('tag'=>'street','req' => false, 'name' => __("Address (Street Address)")),
+            array('tag'=>'street2','req' => false, 'name' => __("Address (Address Line 2)")),
+            array('tag'=>'city',      'req' => false, 'name' => __("Address (City)")),
+            array('tag'=>'state', 'req' => false, 'name' => __("Address (State / Province)")),
+            array('tag'=>'postalCode',    'req' => false, 'name' => __("Address (Zip / Postal Code)")),
+
+            array('tag'=>'phone',   'req' => false, 'name' => __("Phone")),
+            array('tag'=>'fax',   'req' => false, 'name' => __("Fax")),
+            array('tag'=>'status', 'req' => false, 'name' => __("Subscription Status"))
+
+        );
+
+        if(!empty($custom_fields) && is_array($custom_fields)) {
+            foreach($custom_fields as $field) {
+                extract($field);
+                $fields[] = array(
+                    'tag' => $privateName,
+                    'name' => $publicName,
+                    'req' => false,
+                    'custom' => true
+                );
+            }
+        }
+
+        return $fields;
+    }
 
     private static function get_field_mapping($config = array(), $form_id, $merge_vars){
 
-		$usedFields = array();
-		$str = $custom = $standard = '';
-		
+        $usedFields = array();
+        $str = $custom = $standard = '';
+
         //getting list of all fields for the selected form
         $form_fields = self::get_form_fields($form_id);
-        
+
         foreach($merge_vars as $var){
             $selected_field = isset($config["meta"]["field_map"][$var["tag"]]) ? $config["meta"]["field_map"][$var["tag"]] : false;
             $required = $var["req"] === true ? "<span class='gfield_required'>*</span>" : "";
             $error_class = $var["req"] === true && empty($selected_field) && !empty($_POST["gf_icontact_submit"]) ? " feeds_validation_error" : "";
-            
+
             $row = "<tr class='$error_class'><td class='icontact_field_cell'><label for='icontact_map_field_{$var['tag']}'>" . $var["name"]  . " $required</label></td><td class='icontact_field_cell'>" . self::get_mapped_field_list($var["tag"], $selected_field, $form_fields) . "</td></tr>";
-            
-            if(isset($var['custom'])) { 
-            	$custom .= $row; 
-            } else { 
-            	$standard .= $row; 
+
+            if(isset($var['custom'])) {
+                $custom .= $row;
+            } else {
+                $standard .= $row;
             }
         } // End foreach merge var.
-        
+
         $head = "<table cellpadding='0' cellspacing='0'><thead><tr><th scope='col' class='icontact_col_heading'>" . __("List Fields", "gravity-forms-icontact") . "</th><th scope='col' class='icontact_col_heading'>" . __("Form Fields", "gravity-forms-icontact") . "</th></tr></thead><tbody>";
-        
-        	$str = $head . $standard;
-        	
+
+            $str = $head . $standard;
+
         if(!empty($custom)) {
-        	$str .= '</tbody></table>';
-        	$str .= '<label for="icontact_custom_fields" class="left_header">'.__("Custom Fields", "gravity-forms-icontact").'<span class="howto">'.__(sprintf("%sRefresh Custom Fields%s", '<a href="'.add_query_arg('refresh', 'customfields').'">','</a>'), "gravity-forms-icontact").'</span></label>'.$head.$custom;
+            $str .= '</tbody></table>';
+            $str .= '<label for="icontact_custom_fields" class="left_header">'.__("Custom Fields", "gravity-forms-icontact").'<span class="howto">'.__(sprintf("%sRefresh Custom Fields%s", '<a href="'.add_query_arg('refresh', 'customfields').'">','</a>'), "gravity-forms-icontact").'</span></label>'.$head.$custom;
         }
-        
+
         $str .= "</tbody></table>";
-        
+
         return $str;
     }
-    
+
     private function getNewTag($tag, $used = array()) {
-		if(isset($used[$tag])) {
-			$i = 1;
-			while($i < 1000) {
-				if(!isset($used[$tag.'_'.$i])) {
-					return $tag.'_'.$i;
-				}
-				$i++;
-			}
-		}
-		return $tag;
+        if(isset($used[$tag])) {
+            $i = 1;
+            while($i < 1000) {
+                if(!isset($used[$tag.'_'.$i])) {
+                    return $tag.'_'.$i;
+                }
+                $i++;
+            }
+        }
+        return $tag;
     }
-  	
+
     public static function get_form_fields($form_id){
         $form = RGFormsModel::get_form_meta($form_id);
         $fields = array();
@@ -1159,16 +1165,16 @@ class GFiContact {
         $str .= "</select>";
         return $str;
     }
-    
+
     public static function get_mapped_field_checkbox($variable_name, $selected_field, $field){
         $field_name = "icontact_map_field_" . $variable_name;
         $field_id = $field[0];
         $str =  "<input name='$field_name' id='$field_name' type='checkbox' value='$field_id'";
         $selected = $field_id == $selected_field ? " checked='checked'" : false;
         if($selected) {
-        	$str .= $selected; 
+            $str .= $selected;
         }
-    
+
         $str .= " />";
         return $str;
     }
@@ -1184,11 +1190,11 @@ class GFiContact {
 
         //getting all active feeds
         $feeds = GFiContactData::get_feed_by_form($form["id"], true);
-        
+
         foreach($feeds as $feed){
             //only export if user has opted in
             if(self::is_optin($form, $feed)) {
-				self::export_feed($entry, $form, $feed, $api);
+                self::export_feed($entry, $form, $feed, $api);
             }
         }
     }
@@ -1200,59 +1206,83 @@ class GFiContact {
         foreach($feed["meta"]["field_map"] as $var_tag => $field_id){
 
             $field = RGFormsModel::get_field($form, $field_id);
-            
+
             if($var_tag == 'address_full') {
                 $merge_vars[$var_tag] = self::get_address($entry, $field_id);
             } else if($var_tag  == 'country') {
-            	$merge_vars[$var_tag] = empty($entry[$field_id]) ? '' : GFCommon::get_country_code(trim($entry[$field_id]));
+                $merge_vars[$var_tag] = empty($entry[$field_id]) ? '' : GFCommon::get_country_code(trim($entry[$field_id]));
             } else if($var_tag != "email") {
-            	if(!empty($entry[$field_id])) {
-            		/*
+                if(!empty($entry[$field_id])) {
+                    /*
 if($field['type'] == 'textarea') {
-            			$merge_vars[$var_tag] = '<![CDATA['.$entry[$field_id].']]>';
-            		} else{
+                        $merge_vars[$var_tag] = '<![CDATA['.$entry[$field_id].']]>';
+                    } else{
 */
-            			$merge_vars[$var_tag] = $entry[$field_id];
-            		#}
-            	} else {
-            		foreach($entry as $key => $value) {
-            			if(floor($key) == floor($field_id) && !empty($value)) {
-            				$merge_vars[$var_tag][] = $value;	
-            			}
-            		}
-            	}
+                        $merge_vars[$var_tag] = $entry[$field_id];
+                    #}
+                } else {
+                    foreach($entry as $key => $value) {
+                        if(floor($key) == floor($field_id) && !empty($value)) {
+                            $merge_vars[$var_tag][] = $value;
+                        }
+                    }
+                }
             }
         }
-        
-		if(empty($feed["meta"]["contact_list_id"])) { return false; }
-		
-		$lists = explode(',',$feed["meta"]["contact_list_id"]);
 
-		// 1. Create Contact
-			$contactId = $api->createContact($email, $merge_vars);
-			
-		// 2. Subscribe contact to lists
-			$subscriptions = array();
-			foreach($lists as $listId) {
-				$subscriptions[] = $api->subscribeContactsToList($listId, array($contactId));
-			}
-		
-		// 3. Add custom fields for contact
-		if($api->debug && !is_admin() && self::has_access('gravityforms_icontact')) {
-			$api->dump(array(
-				'entry' => $entry, 
-				/* 'form' => $form,  */
-				'feed' => $feed, 
-				'POST' => $_POST, 
-				'lists' => $lists, 
-				'email' => $email, 
-				'merge vars' =>$merge_vars,
-				'contact ID' => $contactId,
-				'$subscriptions' => $subscriptions,
-				'$api' => $api
-			), __('Post-submission summary',"gravity-forms-icontact")); 
-		}
-		return;
+        if(empty($feed["meta"]["contact_list_id"])) { return false; }
+
+        $lists = explode(',',$feed["meta"]["contact_list_id"]);
+
+        // 1. Create Contact
+            $contactId = $api->createContact($email, $merge_vars);
+
+            if(empty($contactId)) {
+                self::add_note($entry["id"], sprintf(__('There was an error adding the entry to iContact: %s', 'gravity-forms-icontact'), $api->lastError));
+                return;
+            }
+
+        // 2. Subscribe contact to lists
+            $subscriptions = array();
+            foreach($lists as $listId) {
+                $subscriptions[] = $api->subscribeContactsToList($listId, array($contactId));
+            }
+
+        // 3. Add custom fields for contact
+        if($api->debug && !is_admin() && self::has_access('gravityforms_icontact')) {
+            $api->dump(array(
+                'entry' => $entry,
+                /* 'form' => $form,  */
+                'feed' => $feed,
+                'POST' => $_POST,
+                'lists' => $lists,
+                'email' => $email,
+                'merge vars' =>$merge_vars,
+                'contact ID' => $contactId,
+                '$subscriptions' => $subscriptions,
+                '$api' => $api
+            ), __('Post-submission summary',"gravity-forms-icontact"));
+        }
+
+        // 4. Add data to the entry for easy access.
+        gform_update_meta($entry['id'], 'icontact_id', $contactId);
+        self::add_note($entry["id"], sprintf(__('Successfully added to iContact with ID #%s . View entry at %s', 'gravity-forms-icontact'), $contactId, 'https://app.icontact.com/icp/core/mycontacts/contacts/edit/'.$contactId));
+
+        return;
+    }
+
+    function entry_info_link_to_icontact($form_id, $lead) {
+        $icontact_id = gform_get_meta($lead['id'], 'icontact_id');
+        if(!empty($icontact_id)) {
+            echo sprintf(__('iContact ID: <a href="https://app.icontact.com/icp/core/mycontacts/contacts/edit/'.$icontact_id.'">%s</a><br /><br />', 'gravity-forms-icontact'), $icontact_id);
+        }
+    }
+
+    private function add_note($id, $note) {
+
+        if(!apply_filters('gravityforms_icontact_add_notes_to_entries', true)) { return; }
+
+        RGFormsModel::add_note($id, 0, __('Gravity Forms iContact Add-on'), $note);
     }
 
     public static function uninstall(){
@@ -1301,8 +1331,8 @@ if($field['type'] == 'textarea') {
             return false;
         }
     }
-    
-  	private function simpleXMLToArray($xml,
+
+    private function simpleXMLToArray($xml,
                     $flattenValues=true,
                     $flattenAttributes = true,
                     $flattenChildren=true,
@@ -1351,27 +1381,27 @@ if($field['type'] == 'textarea') {
             if(!$flattenAttributes){$return[$attributesKey] = $attributes;}
             else{$return = array_merge($return, $attributes);}
         }
-        
+
         return $return;
     }
-    
+
     private function convert_xml_to_object($response) {
-  		$response = @simplexml_load_string($response);  // Added @ 1.2.2
-		if(is_object($response)) {
-		    return $response;
-		} else {
-		    return false;
-		}
+        $response = @simplexml_load_string($response);  // Added @ 1.2.2
+        if(is_object($response)) {
+            return $response;
+        } else {
+            return false;
+        }
     }
-    
+
     private function convert_xml_to_array($response) {
-  		$response = self::convert_xml_to_object($response);
-  		$response = self::simpleXMLToArray($response);
-		if(is_array($response)) {
-		    return $response;
-		} else {
-		    return false;
-		}
+        $response = self::convert_xml_to_object($response);
+        $response = self::simpleXMLToArray($response);
+        if(is_array($response)) {
+            return $response;
+        } else {
+            return false;
+        }
     }
 
     protected static function has_access($required_permission){
