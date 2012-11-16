@@ -57,6 +57,11 @@ This plugin is released under a GPL license.
 
 == Changelog ==
 
+= 1.2.1 =
+* Improved Custom Field support: now sorts alphabetically, no longer has limit on number of custom fields.
+* Fixed PHP warning `array_diff() ... on line 37`
+* Converted cached lists and custom fields to site_transient instead of transient; this will work better for WordPress Multisite.
+
 = 1.2 =
 * Fixed issue where only 20 lists were being fetched for Feed setup
 * Improved error handling by considering "warnings" errors and stopping processing if iContact doesn't successfully create contact.

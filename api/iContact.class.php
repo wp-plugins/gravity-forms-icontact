@@ -23,9 +23,8 @@ class iContact {
 	 */
 	public function __construct($apiUrl = '', $username = '', $password = '', $appId = '', $accountId = '', $clientFolderId = null, $debugMode = false) {
 
-		$this->settings = $settings = get_option("gf_icontact_settings");
-
-		$this->debugMode = $debugMode;
+		$this->settings = $settings = (array)get_option("gf_icontact_settings");
+		$this->debugMode = ($debugMode || current_user_can('administrator') && isset($_REUQEST['debug']));
 		$this->apiUrl = $this->getApiUrl();
 		$this->username = $settings['username'];
 		$this->password = $settings['password'];
@@ -234,7 +233,7 @@ class iContact {
 
 		#$debug = $this->debug;
 
-		$lists = get_transient('icgf_lists');
+		$lists = get_site_transient('icgf_lists');
 		if($lists && (!isset($_REQUEST['refresh']) || (isset($_REQUEST['refresh']) && $_REQUEST['refresh'] !== 'lists'))) {
 			return $lists;
 		}
@@ -249,7 +248,7 @@ class iContact {
 
 		#$this->debug = $debug;
 
-		set_transient('icgf_lists', $lists);
+		set_site_transient('icgf_lists', $lists);
 
 		return $lists;
 	}
@@ -261,26 +260,22 @@ class iContact {
 	public function getCustomFields() {
 		$lists;
 
-#		$debug = $this->debug;
-#		$this->debug = true;
-
-		$fields = get_transient('icgf_cf');
+		$fields = get_site_transient('icgf_cf');
 		if($fields && (!isset($_REQUEST['refresh']) || (isset($_REQUEST['refresh']) && $_REQUEST['refresh'] !== 'customfields'))) {
 			return $fields;
 		}
 
-		$response = $this->callResource("/a/{$this->accountId}/c/{$this->clientFolderId}/customfields",'GET');
+
+		$response = $this->callResource("/a/{$this->accountId}/c/{$this->clientFolderId}/customfields?limit=999",'GET');
+		if($this->debugMode) { $this->dump($response); }
 		if ($response['code'] == self::STATUS_CODE_SUCCESS) {
 			$fields = isset($response['data']['customfields']) ? $response['data']['customfields'] : false;
 			if(!$fields) { return false; }
 		} else {
 			return false;
 		}
-		if($this->debugMode) $this->dump($response);
 
-#		$this->debug = $debug;
-
-		set_transient('icgf_cf', $fields);
+		set_site_transient('icgf_cf', $fields, 60*60*24*7);
 
 		return $fields;
 	}

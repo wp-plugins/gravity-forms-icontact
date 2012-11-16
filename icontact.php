@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms iContact Add-On
 Plugin URI: http://www.seodenver.com/icontact/
 Description: Integrates Gravity Forms with iContact allowing form submissions to be automatically sent to your iContact account
-Version: 1.2
+Version: 1.2.1
 Author: Katz Web Services, Inc.
 Author URI: http://www.katzwebservices.com
 
@@ -56,9 +56,6 @@ class GFiContact {
         if(is_admin()){
             //loading translations
             load_plugin_textdomain('gravity-forms-icontact', FALSE, '/gravity-forms-icontact/languages' );
-
-            add_filter("transient_update_plugins", array('GFiContact', 'check_update'));
-            #add_filter("site_transient_update_plugins", array('GFiContact', 'check_update'));
 
             //creates a new Settings page on Gravity Forms' settings screen
             if(self::has_access("gravityforms_icontact")){
@@ -234,7 +231,7 @@ class GFiContact {
             $valid = false;
             $class = "error invalid_credentials";
         } else if (empty($settings["username"]) && empty($settings["password"])) {
-            $message = sprintf(__('<div style="max-width: 800px; border-bottom:1px solid #ddd; margin-bottom:10px; padding-bottom:10px;" class="wrap"><h2>%s</h2><a href="http://katz.si/icontact" class="alignright" style="text-align:center; margin-left:10px;"><img src="%s" width="120" height="90" alt="Try iContact for Free" /><span style="display:block;">Sign Up Now</span></a>%s<div class="clear"></div></div><div class="clear"></div>', "gravity-forms-icontact"), __('This plugin requires an iContact account.', 'gravity-forms-icontact'), plugins_url('images/graphic.gif', __FILE__), __('<p style="font-size:1.4em; line-height:1.3; font-weight:200;">In order to integrate this plugin with Gravity Forms, you need an iContact account. <a href="http://katz.si/icontact">Sign up for a free iContact account now.</a></p>', 'gravity-forms-icontact'));
+            $message = sprintf(__('<div style="max-width: 800px; border-bottom:1px solid #ddd; margin-bottom:10px; padding-bottom:10px;" class="wrap"><h2><a href="http://katz.si/icontact"><img src="'.plugins_url('images/icontact-logo.gif', __FILE__).'" width="165" height="67" class="alignright" /></a>%s</h2>%s<div class="clear"></div></div><div class="clear"></div>', "gravity-forms-icontact"), __('This plugin requires an iContact account.', 'gravity-forms-icontact'), __('<p style="font-size:1.3em; line-height:1.3; font-weight:200;">In order to integrate this plugin with Gravity Forms, you need an iContact account.</p><p style="font-size:1.3em; line-height:1.3; font-weight:200;">iContact is <em>the</em> email marketing solution to grow your business. Regardless of skill level, you can experience the difference. <a href="http://katz.si/icontact">Sign up for a free iContact account now!</a></p>', 'gravity-forms-icontact'));
             $valid = false;
             $class = '';
             $style = '';
