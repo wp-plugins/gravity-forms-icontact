@@ -16,6 +16,8 @@ Integrate your Gravity Forms forms so that when users submit a form entry, the e
 
 ####Learn about email marketing with iContact:
 
+[youtube=http://www.youtube.com/watch?v=AsV-6WlVi_M]
+
 <strong>MessageBuilder&trade;</strong><br />
 Create beautiful messages in minutes with <strong>iContact's drag-and-drop message creation tool</strong>. Simply pick a template from iContact's well-stocked template library, and make it your own by adding your brand colors, images, links, and text.
 
