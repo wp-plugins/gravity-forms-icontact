@@ -1264,7 +1264,6 @@ class GFiContact {
 
     public static function export_feed($entry, $form, $feed, $api){
         $email = $entry[(int)$feed["meta"]["field_map"]["email"]];
-        IDX_Plus::r($entry);
 
         $merge_vars = array();
         foreach($feed["meta"]["field_map"] as $var_tag => $field_id){
