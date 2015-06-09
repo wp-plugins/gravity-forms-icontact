@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Gravity Forms iContact Add-On
+Plugin Name: iContact for Gravity Forms
 Plugin URI: http://www.seodenver.com/icontact/
 Description: Integrates Gravity Forms with iContact allowing form submissions to be automatically sent to your iContact account
 Version: 1.3.2
